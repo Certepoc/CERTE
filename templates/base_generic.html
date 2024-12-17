@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} CERTE {% endblock %}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6a85b6, #bac8e0);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 100px;
+            margin-bottom: 20px;
+            display: block;
+            margin: 0 auto 20px auto;
+        }
+
+        h3 {
+            color: #7c83db;
+            font-size: 1.5em;
+        }
+
+        .alert {
+            margin-bottom: 10px;
+        }
+        .btn:not(:disabled):not(.disabled) {
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'logo.png' %}" alt="Logo" class="logo">
+        <h3 class="text-center mb-4">Login to Your Account</h3>
+
+        <form method="POST" id="login-form">
+            <div class="form-group">
+                {% csrf_token %}
+                <input type="text" class="form-control form-control-lg" id="username" name="username" required="">
+                <label for="username">Username</label>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control form-control-lg" id="password" name="password" required="">
+                <label for="password">Password</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Login</button>
+        </form>
+        <div class="alert alert-warning" id="login-alert">
+            You need to log in first.
+        </div>
+        <div class="alert alert-info" id="logout-alert" style="display: none;">
+            You have been logged out.
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const logoutMessage = urlParams.get('logout'); // Check for the logout parameter
+
+        if (logoutMessage) {
+            document.getElementById('logout-alert').style.display = 'block'; // Show the alert
+            document.getElementById('login-alert').style.display = 'None'; // hide the alert
+        }
+    </script>
+</body>
+</html>

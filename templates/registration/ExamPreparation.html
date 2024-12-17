@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* Basic Layout Style */
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+        }
+        /* Sidebar (Menu) */
+        .sidebar {
+            width: 20%;
+            background-color: #f4f4f4;
+            padding: 20px;
+            height: 100vh;
+        }
+        .sidebar h2 {
+            text-align: center;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e0e0e0;
+            cursor: pointer;
+        }
+        .sidebar ul li:hover {
+            background-color: #ccc;
+        }
+
+        /* Dropdown & Right-side Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+        }
+        .dropdown-section {
+            width: 30%;
+            padding-right: 20px;
+        }
+        .info-section {
+            width: 70%;
+            padding-left: 20px;
+            border-left: 1px solid #ccc;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .info {
+            padding: 20px;
+            border: 1px solid #ccc;
+            height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!--<h1>Exam Preparation</h1>-->
+    <div class="container">
+        <!-- Sidebar/Menu Section -->
+        <div class="sidebar">
+            <ul>
+            <a href="#" class="sidebar-link" data-url="/dashboard" title="Dashboard" style="text-decoration: none;">
+                <!--<i class="fa-sharp-duotone fa-solid fa-gauge"></i>-->
+                <li> &#9201;  Dashboard</li>
+            </a>
+            <a href="#" class="sidebar-link" data-url="/leaderboard" title="Leaderboard" style="text-decoration: none;">
+                <!--<i class="fas fa-tachometer-alt">
+                    ::before
+                </i>-->
+                <li> &#127942; Leaderboard</li>
+            </a>
+            <a href="#" class="sidebar-link" data-url="/exampreparation" title="ExamPreparation" style="text-decoration: none;">
+                <!--<i class="fas fa-tachometer-alt">
+                    ::before
+                </i>-->
+                <li> &#128209; Exam Preparation</li>
+            </a>
+            <a href="#" class="sidebar-link" data-url="/metrics" title="Metrics" style="text-decoration: none;">
+                <!--<i class="fas fa-tachometer-alt">
+                    ::before
+                </i>-->
+                <li> &#128200; Metrics</li>
+            </a>
+            <a href="#" class="sidebar-link" data-url="/vouchers" title="vouchers" style="text-decoration: none;">
+                <!--<i class="fas fa-tachometer-alt">
+                    ::before
+                </i>-->
+                <li> &#127915; Vouchers</li>
+            </a>
+            <a href="#" class="sidebar-link" data-url="/chat" title="Chat" style="text-decoration: none;">
+                <!--<i class="fas fa-tachometer-alt">
+                    ::before
+                </i>-->
+                <li>&#128172; Chat</li>
+            </a>
+            </ul>
+            <!--<h2>Menu</h2>-->
+            <!--<ul>
+                <li>Dashboard</li>
+                <li>Leaderboard</li>
+                <li>Exam Prepation</li>
+                <li>Metrics</li>
+                <li>Vochers</li>
+                <li>Chat</li>
+            </ul>-->
+        </div>
+
+        <!-- Main Content Section (Dropdowns + Right-side Information) -->
+        <h3 style="height:0px;width: 100px;color:rgba(0, 0, 255, 0.454); text-align: left">Exam Preparation</h3>
+        <div class="main-content">
+            
+            <!-- Dropdown Section -->
+            <div class="dropdown-section">
+                <h3>Amazon Certifications:</h3>
+                <select id="dropdown1">
+                    <option value="">--Select Certification--</option>
+                    <option value="AWS Certified Solutions Architect">AWS Certified Solutions Architect</option>
+                    <option value="AWS Certified Developer">AWS Certified Developer</option>
+                </select>
+
+                <h3>Microsoft Certifications:</h3>
+                <select id="dropdown2">
+                    <option value="">--Select Certification--</option>
+                    <option value="DP-900">DP-900</option>
+                    <option value="AZ-900">AZ-900</option>
+                </select>
+
+                <h3>Google Certifications:</h3>
+                <select id="dropdown3">
+                    <option value="">--Select Certification--</option>
+                    <option value="Google Cloud Assosiate">Google Cloud Assosiate</option>
+                    <option value="Google Cloud Professional">Google Cloud Professional</option>
+                </select>
+            </div>
+
+            <!-- Information Section -->
+            <div class="info-section">
+                <h2 style="height:50px;width: 100px;color:rgba(0, 0, 255, 0.454); text-align: left">Certification Details</h2>
+                <div class="info" id="infoBox">
+                    <p>Select options from the dropdown menus to display the information here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+const dropdowns = document.querySelectorAll('select');
+       const infoBox = document.getElementById('infoBox');
+
+        const certificationInfo = {
+            "AWS Certified Solutions Architect": `
+                <h3>AWS Certified Solutions Architect</h3>
+                <p>This certification focuses on designing distributed systems on AWS. It validates your ability to architect and deploy secure applications on AWS technologies. This certification 
+                    validates your ability to design secure, resilient, and cost-optimized architecture using AWS services. It's ideal for individuals with at least one year of hands-on AWS experience</p>
+                <h4>Exam Details</h4>
+                <h5>*Format:</h5> 
+                <p> > 65 questions(multiple choice/multiple responses) <p>
+                <h4>Skills Measured</h4>
+                <p> @ Design Secure Architecture(30%) </p>
+                <p> @ Design Resilient Architecture(26%) </p>
+                <p> @ Design High-performing Architecture(24%) </p>
+                <p> @ Design Cost-Optimized Architecture(20%) </p>
+            `,
+            "AWS Certified Developer": `
+                <h4>AWS Certified Developer</h4>
+                <p>This certification is for developers who want to build and deploy applications on AWS.</p>
+            `,
+            "DP-900": `
+                <h4>DP-900</h4>
+                <p>This certification validates your foundational knowledge of core data concepts and how they are implemented using Microsoft Azure data services.</p>
+            `,
+            "AZ-900": `
+                <h4>AZ-900</h4>
+                <p>This certification is for individuals looking to demonstrate foundational-level knowledge of cloud services and how Microsoft Azure provides them.</p>
+            `,
+            "Google Cloud Associate": `
+                <h4>Google Cloud Associate</h4>
+                <p>This certification demonstrates your ability to deploy and manage applications, monitor operations, and maintain enterprise solutions on Google Cloud.</p>
+            `,
+            "Google Cloud Professional": `
+                <h4>Google Cloud Professional</h4>
+                <p>This certification validates your advanced skills in designing scalable applications on Google Cloud.</p>
+            `
+        };
+
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('change', () => {
+                const selectedValue = dropdown.value;
+                if (certificationInfo[selectedValue]) {
+                    infoBox.innerHTML = certificationInfo[selectedValue];
+                } else {
+                    infoBox.innerHTML = `
+                        <h4>Certification Details</h4>
+                        <p>Select a certification from the dropdowns to see details here.</p>
+                    `;
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

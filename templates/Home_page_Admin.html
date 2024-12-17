@@ -1,0 +1,328 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a85b6, #bac8e0);
+            color: #333;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .curved-section {
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .header, .footer {
+            background-color: white;
+        }
+        .main-content {
+            background-color: white;
+            padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            overflow-y: auto;
+        }
+        h1 {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #7c83db, #a9a4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h2 {
+            font-weight: bold;
+            color: #6a85b6;
+            margin: 0;
+            font-size: large;
+            margin-bottom: 15px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        a {
+            font-size: 15px;
+        }
+        .list-unstyled{
+            height:250px;
+        }
+    </style>
+</head>
+<body>
+    <header class="d-flex justify-content-between align-items-center p-3 curved-section header">
+        <img src="{% static 'logo.png' %}" alt="Logo" class="logo" style="width: 150px;">
+        <div class="d-flex align-items-center">
+            Welcome, Malli
+            <i class="fas fa-user mx-2" title="Profile"></i>
+            <i class="fas fa-bell mx-2" title="Notifications"></i>
+            <a href="/logout" class="text-dark text-decoration-none">Logout</a>
+        </div>
+    </header>
+
+    <main class="container-fluid curved-section mb-3 main-content">
+        <nav class="col-md-2 bg-light sidebar p-3">
+            <ul class="list-unstyled">
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('dashboard')">&#9201; Dashboard</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('user-management')">&#128101; User Management</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('certification-management')">&#128187; Certification Management</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('voucher-management')">&#127915; Voucher Management</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('news-updates')">&#128196; News & Updates</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('content-management')">&#128213; Content Management</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('reports-analytics')">&#128202; Reports & Analytics</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('settings')">&#9881; Settings</a></li>
+            </ul>
+        </nav>
+
+        <div class="col-md-9" style="margin: auto;">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="main-section">
+                <h1>Admin Dashboard</h1>
+                <h2>Overview of User Statistics</h2>
+                <div class="metrics-container">
+                    <h3>Total Users</h3>
+                    <p><b>1000</b></p>
+                    <h3>Active Users</h3>
+                    <p><b>800</b></p>
+                    <h3>Blocked Users</h3>
+                    <p><b>50</b></p>
+                </div>
+
+                <h2>Quick Access to Recent Activities</h2>
+                <div>
+                    <h4>New Certifications Added</h4>
+                    <ul>
+                        <li>Certification A</li>
+                        <li>Certification B</li>
+                    </ul>
+                    <h4>Users Registered</h4>
+                    <ul>
+                        <li>User 1</li>
+                        <li>User 2</li>
+                    </ul>
+                </div>
+
+                <h2>Notifications Panel</h2>
+                <div class="info">
+                    <p>System Alerts: <b>No new alerts</b></p>
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div id="user-management" class="main-section hidden">
+                <h1>User Management</h1>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Registration Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>User1</td>
+                                <td>user1@example.com</td>
+                                <td>Active</td>
+                                <td>2023-01-01</td>
+                            </tr>
+                            <tr>
+                                <td>User2</td>
+                                <td>user2@example.com</td>
+                                <td>Blocked</td>
+                                <td>2023-01-02</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-primary" id="addUserBtn">Add User</button>
+                <div id="user-form"  class="hidden">
+                    <h2>Add User Information</h2>
+                    <form>
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </form>
+                </div>
+            </div>
+              
+            <!-- Certification Management Section -->
+            <div id="certification-management" class="main-section hidden">
+                <h1>Certification Management</h1>
+                <h2>Certification List</h2>
+                <div class="table-container">
+                    <input type="text" placeholder="Search by Certification Name or Provider" class="form-control mb-3">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Provider</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Certification items will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            
+                <h2>Certification Actions</h2>
+                <button class="btn btn-primary" onclick="showAddCertificationForm()">Add Certification</button>
+                <button class="btn btn-warning" onclick="showEditCertificationForm()">Edit Certification</button>
+                <button class="btn btn-danger" onclick="deleteCertification()">Delete Certification</button>
+            </div>
+            
+            <!-- Voucher Management Section -->
+            <div id="voucher-management" class="main-section hidden">
+                <h1>Voucher Management</h1>
+                <h2>Upload Vouchers</h2>
+                <input type="file" accept=".xls,.xlsx" class="form-control mb-3">
+                <button class="btn btn-success">Upload</button>
+                
+                <h2>Voucher List</h2>
+                <input type="text" placeholder="Search by Certification Name or Voucher Code" class="form-control mb-3">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Certification Name</th>
+                            <th>Voucher Code</th>
+                            <th>Expiration Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Voucher items will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- News and Updates Section -->
+            <div id="news-updates" class="main-section hidden">
+                <h1>News and Updates</h1>
+                <h2>News List</h2>
+                <input type="text" placeholder="Search by Keywords or Dates" class="form-control mb-3">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- News items will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            
+                <h2>News Actions</h2>
+                <button class="btn btn-primary" onclick="showAddNewsForm()">Add News</button>
+                <button class="btn btn-warning" onclick="showEditNewsForm()">Edit News</button>
+                <button class="btn btn-danger" onclick="deleteNews()">Delete News</button>
+            </div>
+
+            <!-- Content Management Section -->
+            <div id="content-management" class="main-section hidden">
+                <h1>Content Management</h1>
+                <h2>Content List</h2>
+                <input type="text" placeholder="Search by Title or Certification" class="form-control mb-3">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Associated Certification</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Content items will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            
+                <h2>Content Actions</h2>
+                <button class="btn btn-primary" onclick="showAddContentForm()">Add Content</button>
+                <button class="btn btn-warning" onclick="showEditContentForm()">Edit Content</button>
+                <button class="btn btn-danger" onclick="deleteContent()">Delete Content</button>
+            </div>
+
+            <!-- Reports and Analytics Section -->
+            <div id="reports-analytics" class="main-section hidden">
+                <h1>Reports and Analytics</h1>
+                <h2>User Progress Reports</h2>
+                <button class="btn btn-info" onclick="generateUserProgressReport()">Generate Report</button>
+                <div id="progress-report-chart"></div>
+            
+                <h2>Certification Statistics</h2>
+                <div id="certification-stats"></div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" class="main-section hidden">
+                <h1>Settings</h1>
+                <h2>Admin Settings</h2>
+                <button class="btn btn-primary" onclick="showAdminSettingsForm()">Change Account Details</button>
+                <button class="btn btn-secondary" onclick="manageNotificationPreferences()">Manage Notification Preferences</button>
+            
+                <h2>System Settings</h2>
+                <button class="btn btn-info" onclick="configureSystemSettings()">Configure System-wide Settings</button>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer class="text-center py-3 curved-section footer">
+        © 2024 LTIMindtree
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.main-section').forEach(s => {
+                s.classList.add('hidden');
+            });
+            // Show the selected section
+            document.getElementById(section).classList.remove('hidden');
+        }
+
+        // Show the dashboard by default on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('dashboard');
+        });
+
+
+        document.getElementById('addUserBtn').onclick = function() {
+        const userForm = document.getElementById('user-form');
+
+        if (userForm.classList.contains('hidden')) {
+            userForm.classList.remove('hidden');
+        } else {
+                userForm.classList.add('hidden');
+            }
+        };
+    </script>
+</body>
+</html>
