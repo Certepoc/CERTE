@@ -120,8 +120,14 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+MEDIA_ROOT = [os.path.join(BASE_DIR, 'media')]
+MEDIA_URL = '/media/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/redirect/'
+#AUTH_USER_MODEL = 'myapp.CustomUser'
+DATABASE_PATH = 'C:\\Users\\10821476\\PycharmProjects\\pythonProject\\CERTE\\db.sqlite3'
+

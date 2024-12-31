@@ -1,24 +1,21 @@
 from django.db import models
 
+class EmployeeCertifications(models.Model):
+    employee_name = models.CharField(max_length=100)
+    employee_ps_no = models.IntegerField()
+    # employee_photo=models.ImageField(upload_to='image/')
+    employee_designation=models.CharField(max_length=50)
+    certification_details=models.CharField(max_length=50)
+    update_date = models.DateTimeField(auto_now_add=True)
 
-class User(models.Model):
-    username = models.CharField(max_length=100, unique=True)
-    email = models.EmailField(unique=True)
-    STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('blocked', 'Blocked'),
-    ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
-    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'employeecertifications'
 
-class Activity(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    activity_type = models.CharField(max_length=100)  # e.g., 'registration', 'certification_added'
-    activity_description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+class Voucher(models.Model):
+    certification_name = models.CharField(max_length=255)
+    voucher_code = models.CharField(max_length=100)
+    expiration_date = models.DateField()
 
-class Notification(models.Model):
-    notification_text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'vouchers'

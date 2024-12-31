@@ -22,8 +22,20 @@
             overflow: hidden;
             margin-bottom: 20px;
         }
-        .header, .footer {
+        .header {
             background-color: white;
+        }
+        .footer {
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
+            margin: 20px;
         }
         .main-content {
             background-color: white;
@@ -32,6 +44,18 @@
             display: flex;
             flex-direction: row;
             overflow-y: auto;
+        }
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-left: 20px;
         }
         h1 {
             font-size: 1.5em;
@@ -102,14 +126,17 @@
             margin-top: 20px;
         }
         .main {
-            padding: 40px;
-            text-align: center;
             flex: 1;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 0 20px 20px 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-left: 20px;
+            text-align:center;
         }
         .hidden {
             display: none;
@@ -256,7 +283,7 @@
             margin-top: 20px;
         }
         .metrics-section {
-            width: 48%;
+            width: 100%;
             background-color: #f5f5f5;
             padding: 20px;
             border-radius: 8px;
@@ -274,6 +301,19 @@
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+        .progress {
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 10px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            background-color: #7c83db; /* Lilac blue */
+            height: 100%;
+            transition: width 0.3s;
+        }
 
     </style>
 </head>
@@ -281,7 +321,11 @@
     <header class="d-flex justify-content-between align-items-center p-3 curved-section header">
         <img src="{% static 'logo.png' %}" alt="Logo" class="logo" style="width: 150px;" onclick="showCerteHome();">
         <div class="d-flex align-items-center">
-            Welcome, Amrita
+            Welcome, {% if received_username %}
+            {{ received_username }}
+            {% else %}
+            Guest
+            {% endif %}
             <i class="fas fa-user mx-2" title="Profile"></i>
             <i class="fas fa-bell mx-2" title="Notifications"></i>
             <a href="/logout" class="text-dark text-decoration-none">Logout</a>
@@ -293,10 +337,10 @@
             <ul class="list-unstyled">
                 <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('dashboard')" style="font-size: 15px;">&#9201; Dashboard</a></li>
                 <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('exam-preparation')" style="font-size: 15px;">&#128209; Exam Preparation</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('leadership')" style="font-size: 15px;">&#127942; Leadership</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('leadership');showOverallChamp();fetchData('AWS')" style="font-size: 15px;">&#127942; Leadership</a></li>
                 <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('metrics')"  style="font-size: 15px;">&#128200; Metrics</a></li>
                 <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('Vouchers')" style="font-size: 15px;">&#127915; Vouchers</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" data-url="/chat" style="font-size: 15px;">&#128172; Chat</a></li>
+<!--                <li class="py-2"><a href="#" class="text-decoration-none" data-url="/chat" style="font-size: 15px;">&#128172; Chat</a></li>-->
             </ul>
         </nav>
 
@@ -450,25 +494,8 @@
                                     <th>Rank</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 1" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Aria</td>
-                                    <td>10</td>
-                                    <td><i class="fas fa-medal medal" style="color: gold;"></i></td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Gracy</td>
-                                    <td>9</td>
-                                    <td><i class="fas fa-medal medal" style="color: silver;"></i></td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 3" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Sara</td>
-                                    <td>8</td>
-                                    <td><i class="fas fa-medal medal" style="color: bronze;"></i></td>
-                                </tr>
+                            <tbody id="champTableBody">
+
                             </tbody>
                         </table>
                     </div>
@@ -476,8 +503,8 @@
                         <h2>Certified Associates by Provider</h2>
                         <div class="gap"></div>
                         <select id="companyDropdown" class="form-control mb-3">
-                            <option value="amazon">Amazon</option>
-                            <option value="microsoft">Microsoft</option>
+                            <option value="AWS">Amazon</option>
+                            <option value="AZURE">Microsoft</option>
                             <option value="google">Google</option>
                             <option value="databricks">Databricks</option>
                             <option value="informatica">Informatica</option>
@@ -495,21 +522,7 @@
                                 </tr>
                             </thead>
                             <tbody id="providerTableBody">
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Tom</td>
-                                    <td>Developer</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Christina</td>
-                                    <td>Architect</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Gracy</td>
-                                    <td>Professional</td>
-                                </tr>
+
                             </tbody>
                         </table>
                     </div>
@@ -519,41 +532,7 @@
             <div id="metrics" class="main-section hidden">
                 <h1>Organizational Certification Metrics</h1>
                 <div class="metrics-container">
-                        <div class="metrics-section">
-                            <h3>Overall Metrics</h3>
-                            <table>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Value</th>
-                                    <th>Progress</th>
-                                </tr>
-                                <tr>
-                                    <td>Total Vouchers Distributed</td>
-                                    <td>500</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Voucher Utilization Rate</td>
-                                    <td>75%</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Certification Completion Rate</td>
-                                    <td>65%</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Engagement Over Time</td>
-                                    <td>Increasing</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Certification Success Rate</td>
-                                    <td>85%</td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
+
                     <div class="metrics-section">
                         <h3>Individual-Level Metrics</h3>
                         <table>
@@ -565,22 +544,22 @@
                             <tr>
                                 <td>Vouchers Received vs. Utilized</td>
                                 <td>60%</td>
-                                <td></td>
+                                <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
                             </tr>
                             <tr>
                                 <td>Certifications Completed</td>
                                 <td>120</td>
-                                <td></td>
+                                <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
                             </tr>
                             <tr>
                                 <td>Time Taken to Complete Certifications</td>
                                 <td>Average 3 months</td>
-                                <td></td>
+                                <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
                             </tr>
                             <tr>
                                 <td>Certification Goals Achieved</td>
                                 <td>80%</td>
-                                <td></td>
+                                <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
                             </tr>
                         </table>
                     </div>
@@ -614,6 +593,8 @@
                                         <li><a href="#" style="color:black">YouTube: Azure DP-900 Crash Course</a></li>
                                         <li><a href="#" style="color:black">Coursera: Intro to Azure Data Services</a></li>
                                     </ul>
+                                    <a href="javascript:void(0);" class="Assesment" onclick="sendEmailAndPostData()">Next Step: Request for Assessment→</a>
+                                    <!-- <div id="errorMessage" style="color: red; display: none;">Failed to send email.</div> -->
                                     <a href="#submitScore" class="next-step" onclick="showstepscontent('submitScore')">Next Step: Submit Score ➔</a>
                                 </section>
 
@@ -629,9 +610,9 @@
                                 <!-- Step 3: Voucher -->
                                 <section id="voucher" class="step-content section">
                                     <h2>Step 3: Voucher Details</h2>
-                                    <p class="p"><strong>Voucher Code:</strong> DP900-FAKE-2024</p>
+                                    <p class="p"><strong>Voucher Code:</strong> <span id="voucherCode"></span>
                                     <p class="p"><strong>Expiry Date:</strong> 31-Dec-2024</p>
-                                    <p class="p"><strong>Steps to Redeem:</strong> Go to the Microsoft certification portal, enter the voucher code during checkout.</p>
+                                    <p class="p"><strong>Steps to Redeem:</strong> Go to the  <span id="certificationPortal"> </span></p>
                                 </section>
                             </div>
                         </div>
@@ -648,6 +629,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 </body>
 <script>
 
@@ -781,7 +763,23 @@
     function updateDropdown() {
         const dropdown1 = document.getElementById("dropdown1");
         const dropdown2 = document.getElementById("dropdown2");
+        const certificationPortal = document.getElementById("certificationPortal");
+		const voucherCodeSpan = document.getElementById("voucherCode");
+
+
+         localStorage.setItem("certificationPortal",certificationPortal);
         const selectedValue = dropdown1.value;
+		console.log(selectedValue);
+
+    certificationPortal.textContent = selectedValue
+        ? `${selectedValue} certification portal, enter the voucher code during checkout.`
+        : "_____certification portal";
+
+		const randomNumber = Math.floor(Math.random() * 900) + 100;
+    const voucherCode = selectedValue
+        ? `${selectedValue}${randomNumber}-ABCD-2024`
+        : "DP900-FAKE-2024";
+    voucherCodeSpan.textContent = voucherCode;
 
         // Clear existing options in dropdown2
         dropdown2.innerHTML = "";
@@ -845,6 +843,92 @@
         document.getElementById("infoBox").innerHTML = "<p>Select options from the dropdown menus to display the information here.</p>";
     }
 
+    function showOverallChamp(){
+    const tbody = document.getElementById("champTableBody");
+    fetch( '/get_overall_cert_champ/')
+		.then(response => response.json())
+		.then(data => {
+		tbody.innerHTML = ''; // Clear existing data
+		let rank=1;
+		data.forEach(employee=>
+        {
+		const row=document.createElement('tr');
+		const imgCell=document.createElement('td');
+		const nameCell=document.createElement('td');
+		const certCell=document.createElement('td');
+		const rankCell=document.createElement('td');
+		nameCell.textContent=employee.employee_name;
+		certCell.textContent=employee.cert_count;
+		imgCell.textContent="User";
+		rankCell.textContent=rank++;
+
+		row.appendChild(imgCell);
+		row.appendChild(nameCell);
+		row.appendChild(certCell);
+		row.appendChild(rankCell);
+		tbody.appendChild(row);
+		});
+		})
+		.catch(error =>{
+		console.error('Error fetching data:',error);
+		});
+    };
+    // Function to fetch and display data
+    function fetchData(category){
+        const companyDropdown = document.getElementById("companyDropdown");
+        const companyName = companyDropdown.value;
+        const tbody=document.getElementById("providerTableBody");
+        fetch( '/get_employee_data/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ 'category': category })
+        })
+		.then(response => response.json())
+		.then(data => {
+		tbody.innerHTML = ''; // Clear existing data
+		data.forEach(employee=>
+        {
+		const row=document.createElement('tr');
+		const imgCell=document.createElement('td');
+		const nameCell=document.createElement('td');
+		const desgCell=document.createElement('td');
+		nameCell.textContent=employee.employee_name;
+		desgCell.textContent=employee.employee_designation;
+		imgCell.textContent="User";
+
+		row.appendChild(imgCell);
+		row.appendChild(nameCell);
+		row.appendChild(desgCell);
+		tbody.appendChild(row);
+		});
+		})
+		.catch(error =>{
+		console.error('Error fetching data:',error);
+		});
+    }
+    //add event listener on dropdown change
+     document.getElementById("companyDropdown").addEventListener('change',function(){
+     const selectedCategory=this.value;
+     fetchData(selectedCategory);
+     });
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
     function showCertificateInfo() {
         const dropdown2 = document.getElementById("dropdown2");
         const selectedRole = dropdown2.value;
@@ -1378,5 +1462,41 @@
             sessionStorage.setItem('logoutMessage', 'You have been logged out.');
             window.location.href = 'login.html'; // Redirect to the login page or home page
         });
+    function sendEmailAndPostData() {
+        const email = ["shaik.mahammedrafi@ltimindtree.com","mannem.mallikarjunarao@ltimindtree.com"];
+        const subject = "Mandatory Training Completion and Assessment Request";
+        const body = "Hi, \n\n I hope this email finds you well. \n\n I am writing to inform you that i have successfully completed Mandatory training. Please find the attached course completion attachment for your reference.\n\nKindly process my assesment request at your earliest convenience.\n\nThankyou for your support.\n\nBest Regards,\nEmployee Name: [Your Name]\nPS No: [Your PS Number]";
+        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        console.log("Generated mailto link:", mailtoLink);
+        window.location.href = mailtoLink;
+        // setTimeout(function () {
+        //     document.getElementById("errorMessage").style.display = "block";
+        // }, 1000);
+        postDataToBackend();
+    }
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    console.log(csrfToken);
+    function postDataToBackend() {
+        const data = {
+            employee_id: 123,
+            Assesmentrequested: 1,
+            Assesmentrequesteddate: new Date().toISOString().split('T')[0]
+        };
+        fetch('/api/postassesmentrequest/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
 </script>
 </html>

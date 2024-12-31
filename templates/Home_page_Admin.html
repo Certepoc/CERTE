@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #6a85b6, #bac8e0);
             color: #333;
+            font-family: 'Arial', sans-serif;
             height: 100vh;
             margin: 0;
             display: flex;
@@ -22,9 +24,29 @@
             overflow: hidden;
             margin-bottom: 20px;
         }
-        .header, .footer {
-            background-color: white;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            padding: 0 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 20px;
         }
+        .footer {
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
+            margin: 20px;
+           }
         .main-content {
             background-color: white;
             padding: 25px;
@@ -33,23 +55,57 @@
             flex-direction: row;
             overflow-y: auto;
         }
+        .main h2 {
+            margin-top: 0;
+            font-size: 2rem; /* Larger heading */
+            color: #6a85b6; /* Heading color */
+        }
         h1 {
-            font-size: 1.5em;
+            font-size: 2em;
+            font-weight: 500;
             background: linear-gradient(135deg, #7c83db, #a9a4ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
             text-align: center;
+            color: white;
+            display: block;
+            margin-block-start: 0.67em;
+            margin-block-end: 0.67em;
+            margin-inline-start: 0px;
+            margin-inline-end: 0px;
+            unicode-bidi: isolate;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
         h2 {
             font-weight: bold;
             color: #6a85b6;
             margin: 0;
-            font-size: large;
+            font-size: 1.5rem;
             margin-bottom: 15px;
+            margin-top: 0;
+        }
+        th {
+            background-color: #6a85b6;
+            color: white;
+            text-align: center;
+            font-size: 1rem;
+        }
+        th, td {
+            border: 1px solid #6a85b6;
+            padding: 5px;
+            text-align: center;
+            font-size: 0.8rem;
         }
         .table-container {
+            max-width: 100%;
+            overflow-x: auto;
             margin-top: 20px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+            margin-bottom: 20px; /* Space below the button group */
         }
         .hidden {
             display: none;
@@ -60,13 +116,166 @@
         .list-unstyled{
             height:250px;
         }
+        .sidebar {
+            width: 220px; /* Slightly wider sidebar */
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 20px 0 0 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .sidebar ul li:hover {
+            background-color: #ccc;
+        }
+
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-left: 20px;
+        }
+        .metrics-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .metrics-section {
+            width: 48%;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .metrics-section h3 {
+            margin-top: 0;
+        }
+        .metrics-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .metrics-section th, .metrics-section td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .progress {
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 10px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            background-color: #7c83db; /* Lilac blue */
+            height: 100%;
+            transition: width 0.3s;
+        }
+        #dashboard {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        h1, h2, h3, h4 {
+            color: #333;
+        }
+        .metrics-container h3 {
+            margin-bottom: 5px;
+        }
+        .metrics-container p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            background: #e7f3ff;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #fff3cd;
+            padding: 10px;
+            border: 1px solid #ffeeba;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .editUserBtn {
+            background-color: #4a90e2; /* Soft Blue */
+            color: white;
+            border: none;
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px 20px; /* Padding for better size */
+            font-size: 16px; /* Font size */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            transition: background-color 0.3s, transform 0.2s; /* Transition effects */
+        }
+
+        .editUserBtn:hover {
+            background-color: #357ABD; /* Darker Blue on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+
+        .deleteUserBtn {
+            background-color: #e74c3c; /* Soft Red */
+            color: white;
+            border: none;
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px 20px; /* Padding for better size */
+            font-size: 16px; /* Font size */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            transition: background-color 0.3s, transform 0.2s; /* Transition effects */
+        }
+
+        .deleteUserBtn:hover {
+            background-color: #c0392b; /* Darker Red on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
     </style>
 </head>
 <body>
     <header class="d-flex justify-content-between align-items-center p-3 curved-section header">
         <img src="{% static 'logo.png' %}" alt="Logo" class="logo" style="width: 150px;">
         <div class="d-flex align-items-center">
-            Welcome, Malli
+            Welcome, {% if received_username %}
+            {{ received_username }}
+            {% else %}
+            Guest
+            {% endif %}
             <i class="fas fa-user mx-2" title="Profile"></i>
             <i class="fas fa-bell mx-2" title="Notifications"></i>
             <a href="/logout" class="text-dark text-decoration-none">Logout</a>
@@ -80,10 +289,11 @@
                 <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('user-management')">&#128101; User Management</a></li>
                 <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('certification-management')">&#128187; Certification Management</a></li>
                 <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('voucher-management')">&#127915; Voucher Management</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('news-updates')">&#128196; News & Updates</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('content-management')">&#128213; Content Management</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('reports-analytics')">&#128202; Reports & Analytics</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('settings')">&#9881; Settings</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('metrics')" style="font-size: 15px;">&#128200; Metrics</a></li>
+<!--                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('news-updates')">&#128196; News & Updates</a></li>-->
+<!--                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('content-management')">&#128213; Content Management</a></li>-->
+<!--                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('reports-analytics')">&#128202; Reports & Analytics</a></li>-->
+<!--                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('settings')">&#9881; Settings</a></li>-->
             </ul>
         </nav>
 
@@ -93,31 +303,28 @@
                 <h1>Admin Dashboard</h1>
                 <h2>Overview of User Statistics</h2>
                 <div class="metrics-container">
-                    <h3>Total Users</h3>
-                    <p><b>1000</b></p>
-                    <h3>Active Users</h3>
-                    <p><b>800</b></p>
-                    <h3>Blocked Users</h3>
-                    <p><b>50</b></p>
+                    <div>
+                        <h3>Total Users</h3>
+                        <p><b>{{ users|length }}</b></p>
+                    </div>
+                    <div>
+                        <h3>Active Users</h3>
+                        <p><b>{{ active_count }}</b></p>
+                    </div>
+                    <div>
+                        <h3>Blocked Users</h3>
+                        <p><b>{{ blocked_count }}</b></p>
+                    </div>
                 </div>
 
                 <h2>Quick Access to Recent Activities</h2>
                 <div>
-                    <h4>New Certifications Added</h4>
-                    <ul>
-                        <li>Certification A</li>
-                        <li>Certification B</li>
-                    </ul>
                     <h4>Users Registered</h4>
                     <ul>
-                        <li>User 1</li>
-                        <li>User 2</li>
+                        {% for user in users %}
+                            <li>{{ user.username }}</li>
+                        {% endfor %}
                     </ul>
-                </div>
-
-                <h2>Notifications Panel</h2>
-                <div class="info">
-                    <p>System Alerts: <b>No new alerts</b></p>
                 </div>
             </div>
 
@@ -132,81 +339,136 @@
                                 <th>Email</th>
                                 <th>Status</th>
                                 <th>Registration Date</th>
+                                <th>Actions</th> <!-- Added Actions column -->
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="userTableBody">
+                            {% if users %}
+                                {% for user in users %}
+                                    <tr  id="row-{{ user.id }}">
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{% if user.is_active %}
+                                                Active
+                                            {% else %}
+                                                Blocked
+                                            {% endif %}</td>
+                                        <td>{{ user.created_at }}</td>
+                                        <td>
+                                            <button class="btn btn-warning editUserBtn"
+                                                    data-id="{{ user.id }}"
+                                                    data-username="{{ user.username }}"
+                                                    data-email="{{ user.email }}"
+                                                    data-is-admin="{{ user.is_admin }}"
+                                                    data-is-active="{{ user.is_active }}">Edit</button>
+                                            <button class="btn btn-danger deleteUserBtn"
+                                                    data-id="{{ user.id }}" onclick="deleteUser(this)">Delete</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
                             <tr>
-                                <td>User1</td>
-                                <td>user1@example.com</td>
-                                <td>Active</td>
-                                <td>2023-01-01</td>
+                                <td colspan="5">No users found.</td> <!-- Adjusted colspan -->
                             </tr>
-                            <tr>
-                                <td>User2</td>
-                                <td>user2@example.com</td>
-                                <td>Blocked</td>
-                                <td>2023-01-02</td>
-                            </tr>
+                            {% endif %}
                         </tbody>
                     </table>
+                      <div class="pagination">
+                        <button id="prevuserBtn" class="btn btn-secondary" onclick="changeUserPage(-1)" disabled>Previous</button>
+
+                        <button id="nextuserBtn" class="btn btn-secondary" onclick="changeUserPage(1)">Next</button>
+
+                    </div>
                 </div>
                 <button class="btn btn-primary" id="addUserBtn">Add User</button>
-                <div id="user-form"  class="hidden">
+                <div id="user-form" class="hidden">
                     <h2>Add User Information</h2>
-                    <form>
-                        <div class="form-group">
-                            <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" required>
-                        </div>
+                    <form action="{% url 'insert_user' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="text" name="username" placeholder="Username" required>
+                        <input type="password" name="password" placeholder="Password" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <label>
+                            <input type="checkbox" name="is_admin"> Admin
+                        </label>
+                        <label>
+                            <input type="checkbox" name="is_active"> Active
+                        </label>
                         <button type="submit" class="btn btn-success">Submit</button>
                     </form>
                 </div>
+                <div id="updateuserform" class="hidden">
+                    <h2>Update User Information</h2>
+
+
+                        <form action="{% url 'update_user' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" id="updateUserId" value="{{ user.id }}">
+                            <input type="text" name="username" id="updateUsername" placeholder="Username" value="{{ user.username }}" required>
+                            <input type="password" name="password" id="updatePassword" placeholder="Password">
+                            <input type="email" name="email" id="updateEmail" placeholder="Email" value="{{ user.email }}" required>
+
+                            <label>
+                                <input type="checkbox" name="is_Admin" id="updateIsAdmin" {% if user.is_admin %}checked{% endif %}> Admin
+                            </label>
+                            <label>
+                                <input type="checkbox" name="is_Active" id="updateIsActive" {% if user.is_active %}checked{% endif %}> Active
+                            </label>
+
+                            <button type="submit" class="btn btn-success">Update</button>
+                        </form>
+
+
+                </div>
             </div>
-              
+
             <!-- Certification Management Section -->
-            <div id="certification-management" class="main-section hidden">
+          <div id="certification-management" class="main-section hidden">
                 <h1>Certification Management</h1>
+                <input type="file" id="certificationFile" accept=".xls,.xlsx" class="form-control mb-3">
+
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="handleFileUpload('certificationFile', displayCertificationData)">Upload</button>
+                    <button class="btn btn-warning" onclick="showEditCertificationForm()">Edit Certification</button>
+                    <button class="btn btn-danger" onclick="deleteCertification()">Delete Certification</button>
+                    <button id="saveCertificationBtn" class="btn btn-primary mt-3" onclick="saveData('certification')">Save Certifications</button>
+                </div>
                 <h2>Certification List</h2>
                 <div class="table-container">
-                    <input type="text" placeholder="Search by Certification Name or Provider" class="form-control mb-3">
-                    <table class="table">
+                    <input type="text" id="certificationSearch" placeholder="Search by Certification Name or Provider" class="form-control mb-3" oninput="filterData('certificationSearch', 'certificationDataTableBody', [0, 1])">
+                    <table class="table" id="certificationDataTable">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Provider</th>
                                 <th>Status</th>
+                                <th>Validity Years</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="certificationDataTableBody">
                             <!-- Certification items will be dynamically inserted here -->
                         </tbody>
                     </table>
                 </div>
-            
-                <h2>Certification Actions</h2>
-                <button class="btn btn-primary" onclick="showAddCertificationForm()">Add Certification</button>
-                <button class="btn btn-warning" onclick="showEditCertificationForm()">Edit Certification</button>
-                <button class="btn btn-danger" onclick="deleteCertification()">Delete Certification</button>
+               <div>
+                    <button id="prevBtn" class="btn btn-secondary" onclick="changePage(-1,'certification')" disabled>Previous</button>
+                    <button id="nextBtn" class="btn btn-secondary" onclick="changePage(1,'certification')">Next</button>
+                </div>
             </div>
-            
             <!-- Voucher Management Section -->
             <div id="voucher-management" class="main-section hidden">
                 <h1>Voucher Management</h1>
-                <h2>Upload Vouchers</h2>
-                <input type="file" accept=".xls,.xlsx" class="form-control mb-3">
-                <button class="btn btn-success">Upload</button>
-                
+                <input type="file" id="voucherFile" accept=".xls,.xlsx" class="form-control mb-3">
+                <div class="btn-group">
+                    <button class="btn btn-success btn-sm" onclick="handleFileUpload('voucherFile', displayVoucherData)">Upload</button>
+
+                </div>
+
+
                 <h2>Voucher List</h2>
-                <input type="text" placeholder="Search by Certification Name or Voucher Code" class="form-control mb-3">
-                <table class="table">
+                <input type="text" id="voucherSearch" placeholder="Search by Certification Name or Voucher Code" class="form-control mb-3" oninput="filterData('voucherSearch', 'voucherDataTableBody', [0, 1])">
+                <table class="table" id="voucherTable">
                     <thead>
                         <tr>
                             <th>Certification Name</th>
@@ -214,10 +476,59 @@
                             <th>Expiration Date</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="voucherDataTableBody">
                         <!-- Voucher items will be dynamically inserted here -->
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                     <button id="saveVoucherBtn" class="btn btn-primary mt-3" onclick="saveData('voucher')">Save Vouchers</button>
+                    <div>
+                        <button id="prevVoucherBtn" class="btn btn-secondary" onclick="changePage(-1,'voucher')" disabled>Previous</button>
+                        <button id="nextVoucherBtn" class="btn btn-secondary" onclick="changePage(1,'voucher')">Next</button>
+                    </div>
+                </div>
+
+    </div>
+            </div>
+            <div id="metrics" class="main-section hidden">
+                <h1>Organizational Certification Metrics</h1>
+                <div class="metrics-container">
+                        <div class="metrics-section">
+                            <h3>Overall Metrics</h3>
+                            <table>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Value</th>
+                                    <th>Progress</th>
+                                </tr>
+                                <tr>
+                                    <td>Total Vouchers Distributed</td>
+                                    <td>500</td>
+                                    <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Voucher Utilization Rate</td>
+                                    <td>75%</td>
+                                    <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Certification Completion Rate</td>
+                                    <td>65%</td>
+                                    <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Engagement Over Time</td>
+                                    <td>Increasing</td>
+                                    <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Certification Success Rate</td>
+                                    <td>85%</td>
+                                    <td><div class="progress"><div class="progress-bar" style="width: 80%;"></div></div></td>
+                                </tr>
+                            </table>
+                        </div>
+                </div>
             </div>
 
             <!-- News and Updates Section -->
@@ -236,7 +547,7 @@
                         <!-- News items will be dynamically inserted here -->
                     </tbody>
                 </table>
-            
+
                 <h2>News Actions</h2>
                 <button class="btn btn-primary" onclick="showAddNewsForm()">Add News</button>
                 <button class="btn btn-warning" onclick="showEditNewsForm()">Edit News</button>
@@ -259,7 +570,7 @@
                         <!-- Content items will be dynamically inserted here -->
                     </tbody>
                 </table>
-            
+
                 <h2>Content Actions</h2>
                 <button class="btn btn-primary" onclick="showAddContentForm()">Add Content</button>
                 <button class="btn btn-warning" onclick="showEditContentForm()">Edit Content</button>
@@ -272,7 +583,7 @@
                 <h2>User Progress Reports</h2>
                 <button class="btn btn-info" onclick="generateUserProgressReport()">Generate Report</button>
                 <div id="progress-report-chart"></div>
-            
+
                 <h2>Certification Statistics</h2>
                 <div id="certification-stats"></div>
             </div>
@@ -283,11 +594,11 @@
                 <h2>Admin Settings</h2>
                 <button class="btn btn-primary" onclick="showAdminSettingsForm()">Change Account Details</button>
                 <button class="btn btn-secondary" onclick="manageNotificationPreferences()">Manage Notification Preferences</button>
-            
+
                 <h2>System Settings</h2>
                 <button class="btn btn-info" onclick="configureSystemSettings()">Configure System-wide Settings</button>
             </div>
-            
+
         </div>
     </main>
 
@@ -299,6 +610,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+        // Helper function to get CSRF token
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        // Function to show the selected section
         function showSection(section) {
             // Hide all sections
             document.querySelectorAll('.main-section').forEach(s => {
@@ -308,21 +636,403 @@
             document.getElementById(section).classList.remove('hidden');
         }
 
-        // Show the dashboard by default on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            showSection('dashboard');
+    function fetchUsers(page) {
+        fetch(`http://127.0.0.1:8000/user_list/?page=${page}&per_page=${usersPerPage}`)
+            .then(response => response.json())
+            .then(data => {
+                const userTableBody = document.getElementById('userTableBody');
+                userTableBody.innerHTML = ''; // Clear existing rows
+
+                data.users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.id = `row-${user.id}`;
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.is_active ? 'Active' : 'Blocked'}</td>
+                        <td>${user.created_at}</td>
+                        <td>
+                            <button class="btn btn-warning editUserBtn"
+                                    data-id="${user.id}"
+                                    data-username="${user.username}"
+                                    data-email="${user.email}"
+                                    data-is-admin="${user.is_admin}"
+                                    data-is-active="${user.is_active}">Edit</button>
+                            <button class="btn btn-danger deleteUserBtn"
+                                    data-id="${user.id}">Delete</button>
+                        </td>
+                    `;
+                    userTableBody.appendChild(row);
+                });
+
+                // Update button states for pagination
+                document.getElementById('prevuserBtn').disabled = currentPage === 1;
+                document.getElementById('nextuserBtn').disabled = currentPage === data.total_pages;
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                alert('Failed to load users.');
+            });
+    }
+
+    // Change the current page and fetch users
+    function changeUserPage(direction) {
+        if (direction === 1) {
+            currentPage++;
+        } else if (direction === -1 && currentPage > 1) {
+            currentPage--;
+        }
+        fetchUsers(currentPage); // Fetch users for the new page
+    }
+
+    // Delete User function
+    function deleteUser(button) {
+        const userId = button.getAttribute('data-id'); // Retrieve the user ID from data-id
+        const rowId = `row-${userId}`; // Construct the row ID
+        const csrfToken = getCookie('csrftoken');
+
+        fetch(`http://127.0.0.1:8000/delete_user/${userId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                const row = document.getElementById(rowId);
+                if (row) {
+                    row.remove(); // Remove the corresponding row
+                    alert('User deleted successfully');
+                    fetchUsers(currentPage); // Refresh the user list
+                }
+            } else {
+                return response.json().then(data => {
+                    const errorMessage = data.error || 'Unknown error';
+                    alert('Error deleting user: ' + errorMessage);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Network error occurred: ' + error.message);
+        });
+    }
+
+    // Initialize pagination variables
+    let currentuserPage = 1; // Start on the first page
+    const usersPerPage = 2; // Define how many users to show per page
+
+    // Show the dashboard by default on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        showSection('dashboard'); // Show the dashboard
+        fetchUsers(currentuserPage); // Load users for the first page
+
+        // Add User Button functionality
+        document.getElementById('addUserBtn').onclick = function() {
+            const userForm = document.getElementById('user-form');
+            userForm.classList.toggle('hidden'); // Toggle visibility
+        };
+
+        // Event delegation for edit and delete buttons
+        document.getElementById('userTableBody').addEventListener('click', function(event) {
+            if (event.target.classList.contains('editUserBtn')) {
+                const button = event.target;
+                const userId = button.getAttribute('data-id');
+                const username = button.getAttribute('data-username');
+                const email = button.getAttribute('data-email');
+                const isAdmin = button.getAttribute('data-is-admin') === 'true';
+                const isActive = button.getAttribute('data-is-active') === 'true';
+
+                // Populate the update form fields
+                document.getElementById('updateUserId').value = userId;
+                document.getElementById('updateUsername').value = username;
+                document.getElementById('updateEmail').value = email;
+                document.getElementById('updateIsAdmin').checked = isAdmin;
+                document.getElementById('updateIsActive').checked = isActive;
+
+                // Show the update user form
+                const updateForm = document.getElementById('updateuserform');
+                updateForm.classList.remove('hidden');
+            } else if (event.target.classList.contains('deleteUserBtn')) {
+                deleteUser(event.target);
+            }
         });
 
+        // Handle form submission for updating user
+        document.getElementById('updateuserform').onsubmit = function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
-        document.getElementById('addUserBtn').onclick = function() {
-        const userForm = document.getElementById('user-form');
+            const userId = document.getElementById('updateUserId').value;
+            const username = document.getElementById('updateUsername').value;
+            const email = document.getElementById('updateEmail').value;
+            const isAdmin = document.getElementById('updateIsAdmin').checked;
+            const isActive = document.getElementById('updateIsActive').checked;
+            const csrfToken = getCookie('csrftoken');
 
-        if (userForm.classList.contains('hidden')) {
-            userForm.classList.remove('hidden');
-        } else {
-                userForm.classList.add('hidden');
-            }
+            fetch(`http://127.0.0.1:8000/update_user/${userId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    is_admin: isAdmin,
+                    is_active: isActive,
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('User updated successfully');
+                    fetchUsers(currentPage); // Refresh the user list
+                    document.getElementById('updateuserform').classList.add('hidden'); // Hide the form
+                } else {
+                    return response.json().then(data => {
+                        const errorMessage = data.error || 'Unknown error';
+                        alert('Error updating user: ' + errorMessage);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error)
+                alert('Network error occurred: ' + error.message);
+            });
         };
+    });
+
+
+
+
+            function handleFileUpload(fileInputId, callback) {
+            const fileInput = document.getElementById(fileInputId);
+
+            if (!fileInput) {
+                console.error('File input element not found');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+            console.log('File selected:', file.name); // Debug log
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Assume first sheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+
+                    // Convert to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    console.log('Parsed data:', jsonData); // Debug log
+
+                    // Call the provided callback function with the parsed data
+                    callback(jsonData);
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    alert('Error processing the Excel file. Please make sure it\'s a valid Excel file.');
+                }
+            };
+
+            reader.onerror = function(error) {
+                console.error('Error reading file:', error);
+                alert('Error reading the file');
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        let currentPage = 1;
+    const rowsPerPage = 10;
+    let certData = [];
+    let voucherData = [];
+
+    function displayVoucherData(data) { // {
+        voucherData = data; // Store the data for pagination
+        currentPage = 1; // Reset to the first page
+        renderTable('voucher'); // Render the table with new data
+    } // }
+
+    function displayCertificationData(data) { // {
+        certData = data; // Store the data for pagination
+        currentPage = 1; // Reset to the first page
+        renderTable('certification'); // Render the table with new data
+    } // }
+
+    function renderTable(type) { // {
+        const tbody = type === 'certification' ? document.getElementById('certificationDataTableBody') : document.getElementById('voucherDataTableBody');
+        tbody.innerHTML = ''; // Clear existing data
+
+        let data = type === 'certification' ? certData : voucherData;
+
+        if (data.length === 0) { // {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="${type === 'certification' ? 5 : 3}">No data found in the Excel file</td>`;
+            tbody.appendChild(tr);
+            return;
+        } // }
+
+        // Calculate start and end indices for current page
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = Math.min(startIndex + rowsPerPage, data.length);
+
+        // Display rows for the current page
+        for (let i = startIndex; i < endIndex; i++) {
+            const row = data[i];
+            const tr = document.createElement('tr');
+            if (type === 'certification') {
+                tr.innerHTML = `
+                    <td>${row['ID'] || ''}</td>
+                    <td>${row['Name'] || ''}</td>
+                    <td>${row['Provider'] || ''}</td>
+                    <td>${row['Status'] || ''}</td>
+                    <td>${row['Validity_Years'] || ''}</td>
+                `;
+            } else {
+                tr.innerHTML = `
+                    <td>${row['Certification Name'] || ''}</td>
+                    <td>${row['Voucher Code'] || ''}</td>
+                    <td>${row['Expiry Date'] || ''}</td>
+                `;
+            }
+            tbody.appendChild(tr);
+        }
+
+        // Update button states
+        document.getElementById('prevBtn').disabled = (currentPage === 1);
+        document.getElementById('nextBtn').disabled = (endIndex >= data.length);
+        document.getElementById('prevVoucherBtn').disabled = (currentPage === 1);
+        document.getElementById('nextVoucherBtn').disabled = (endIndex >= data.length);
+    }
+
+    function changePage(direction, type) {
+        // Update currentPage based on direction
+        currentPage += direction;
+
+        // Ensure currentPage stays within bounds
+        if (currentPage < 1) {
+            currentPage = 1; // Prevent going below page 1
+        } else if (type === 'certification' && currentPage > Math.ceil(certData.length / rowsPerPage)) {
+            currentPage = Math.ceil(certData.length / rowsPerPage); // Prevent going above the last page
+        } else if (type === 'voucher' && currentPage > Math.ceil(voucherData.length / rowsPerPage)) {
+            currentPage = Math.ceil(voucherData.length / rowsPerPage); // Prevent going above the last page
+        }
+
+        // Render the table with the updated page
+        renderTable(type);
+    }
+
+    function saveData(type) {
+            const tbody = type === 'certification' ? document.getElementById('certificationDataTableBody') : document.getElementById('voucherDataTableBody');
+            const saveBtn = type === 'certification' ? document.getElementById('saveCertificationBtn') : document.getElementById('saveVoucherBtn');
+
+    if (!tbody || !tbody.children.length) {
+        alert('No data to save!');
+        return;
+    }
+
+    // Show loading state
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = 'Saving...';
+    saveBtn.disabled = true;
+
+    const items = [];
+    Array.from(tbody.children).forEach(row => {
+        const cells = row.cells;
+        if (type === 'certification') {
+            items.push({
+            id: cells[0].textContent,
+                name: cells[1].textContent,
+                provider: cells[2].textContent,
+                status: cells[3].textContent,
+                validity_years: cells[4]?.textContent || ''
+            });
+        } else {
+            items.push({
+                certification_name: cells[0].textContent,
+                voucher_code: cells[1].textContent,
+                expiration_date: cells[2].textContent
+            });
+        }
+    });
+
+    // Send data to the server
+    fetch(`/save_${type}s/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ items })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert('Data saved successfully!');
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Error saving data:', error);
+        alert('Error saving data. Please try again.');
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    });
+}
+
+
+    function filterVouchers() {
+        const searchInput = document.getElementById('voucherSearch').value.toLowerCase();
+        const tbody = document.getElementById('voucherTableBody');
+        const rows = tbody.getElementsByTagName('tr');
+        // Loop through all rows and hide those that don't match the search query
+        Array.from(rows).forEach(row => {
+            const certificationName = row.cells[0].textContent.toLowerCase();
+            const voucherCode = row.cells[1].textContent.toLowerCase();
+            if (certificationName.includes(searchInput) || voucherCode.includes(searchInput)) {
+                row.style.display = ''; // Show row
+            } else {
+                row.style.display = 'none'; // Hide row
+            }
+        });
+    }
+
+        function filterData(searchInputId, tableBodyId, columnIndices) {
+        const searchInput = document.getElementById(searchInputId).value.toLowerCase();
+        const tbody = document.getElementById(tableBodyId);
+        const rows = tbody.getElementsByTagName('tr');
+
+    // Loop through all rows and hide those that don't match the search query
+    Array.from(rows).forEach(row => {
+        let matchFound = false;
+
+        // Check specified columns for matches
+        columnIndices.forEach(index => {
+            const cellText = row.cells[index].textContent.toLowerCase();
+            if (cellText.includes(searchInput)) {
+                matchFound = true;
+            }
+        });
+
+        // Show or hide the row based on the search result
+        row.style.display = matchFound ? '' : 'none'; // Show if match found, otherwise hide
+    });
+}
+
+
+
     </script>
 </body>
 </html>
