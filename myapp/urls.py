@@ -1,10 +1,39 @@
+from django.http import HttpResponse
 from django.urls import path
-from .views import login_view,custom_login_redirect,logout_view,HomePageView,HomePageAdminView
+from .views import *
 
 urlpatterns = [
     path('login/', login_view, name='login'),
     path('redirect/', custom_login_redirect, name='custom_login_redirect'),
-    path('Home_page/', HomePageView.as_view(), name='home_page'),
+    path('redirect/<str:section>/', redirect_to_section, name='redirect_to_section'),
+    path('', HomePageView.as_view(), name='home_page'),
+    path('Home_page/change_passw/', change_passw, name='change_passw'),
     path('home_page_admin/', HomePageAdminView.as_view(), name='home_page_admin'),
     path('logout/', logout_view, name='logout'),
+    path('insert_user/', user_form, name='insert_user'),
+    path('insert_users_bulk/', insert_users_bulk, name='insert_users_bulk'),
+    path('user_list/', user_list, name='user_list'),
+    path('update_user/', update_user, name='update_user'),
+    path('delete_user/<int:id>/', delete_user, name='delete_user'),
+    path('update_user_status/<int:user_id>/', update_user_status, name='update_user_status'),
+    path('save_certifications/', save_certifications, name='save_certifications'),
+    path('insert_cert_bulk/', insert_cert_bulk, name='insert_cert_bulk'),
+    path('update_certification/', update_certification, name='update_certification'),
+    path('update_certification/<str:id>/', update_certification, name='update_certification'),
+    path('certification_list/', certification_list, name='certification_list'),
+    path('success/', lambda request: HttpResponse("User inserted successfully!")),
+    path('save_vouchers/', save_vouchers, name='save_vouchers'),
+    path('get_employee_data/',get_employee_certification_records,name='get_employee_data'),
+    path('get_overall_cert_champ/', get_overall_cert_champ, name='get_overall_cert_champ'),
+    path('get_providers/', get_providers,name='get_providers'),
+    path('get_names/', get_names_by_provider,name='get_names'),
+    path('save_enrollment/', save_enrollment,name='save_enrollment'),
+    path('show_enrollment/',show_enrollment,name='show_enrollment'),
+    path('update_certification_status/',update_certification_status,name='update_certification_status'),
+    path('update_exam_date/',update_exam_date,name='update_exam_date'),
+    path('get_wcp_request_records/',get_wcp_request_records,name='get_wcp_request_records'),
+    path('get_wcp_completed_records/',get_wcp_completed_records,name='get_wcp_completed_records'),
+    path('update_status_voucher/<int:pk>',update_status_voucher,name='update_status_voucher'),
+    path('certificate_upload/',certificate_upload,name='certificate_upload'),
+    path('get_voucher/', get_voucher, name='get_voucher'),
 ]

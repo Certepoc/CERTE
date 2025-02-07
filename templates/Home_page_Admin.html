@@ -1,328 +1,1492 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #6a85b6, #bac8e0);
-            color: #333;
-            height: 100vh;
-            margin: 0;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certe | LTIMindtree Certification Portal</title>
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+  <style>
+      .user-container {
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            justify-content: space-between;
         }
-        .curved-section {
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 20px;
+
+        .left-card, .right-card {
+            width: 48%; /* Adjust width as needed */
+            padding: 10px; /* Optional: Add padding for better spacing */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for depth */
+            border-radius: 5px; /* Optional: Rounded corners */
         }
-        .header, .footer {
-            background-color: white;
+      #user-request {
+            width: 100%; /* Set width to 80% of the parent container */
+            height: auto; /* Adjust height automatically based on content */
+            padding: 20px; /* Add padding inside the div */
+            margin: 20px auto; /* Center the div and add margin */
+            border: 1px solid #ccc; /* Optional: Add a border */
+            border-radius: 5px; /* Optional: Add rounded corners */
         }
-        .main-content {
-            background-color: white;
-            padding: 25px;
-            flex: 1;
-            display: flex;
-            flex-direction: row;
-            overflow-y: auto;
-        }
-        h1 {
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #7c83db, #a9a4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        h2 {
-            font-weight: bold;
-            color: #6a85b6;
-            margin: 0;
-            font-size: large;
-            margin-bottom: 15px;
-        }
-        .table-container {
-            margin-top: 20px;
-        }
-        .hidden {
-            display: none;
-        }
-        a {
-            font-size: 15px;
-        }
-        .list-unstyled{
-            height:250px;
-        }
-    </style>
+  </style>
+
 </head>
+
 <body>
-    <header class="d-flex justify-content-between align-items-center p-3 curved-section header">
-        <img src="{% static 'logo.png' %}" alt="Logo" class="logo" style="width: 150px;">
-        <div class="d-flex align-items-center">
-            Welcome, Malli
-            <i class="fas fa-user mx-2" title="Profile"></i>
-            <i class="fas fa-bell mx-2" title="Notifications"></i>
-            <a href="/logout" class="text-dark text-decoration-none">Logout</a>
+
+  <header>
+    <div class="logo">
+      <img src="{% static 'logo1.png' %}" alt="Logo">
+      <h1>Certe.</h1>
+    </div>
+    <div class="user-info">
+      <span>👋 Welcome, {% if received_username %}
+            {{ received_username }}
+            {% else %}
+            Guest
+            {% endif %}</span>
+      <a  href="/logout" class="text-dark text-decoration-none">🚪 Logout</a>
+    </div>
+  </header>
+
+  <main>
+      <div class="sidebar">
+              <h3>Admin Dashboard</h3>
+              <ul>
+                    <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('dashboard')">&#9201; Dashboard</a></li>
+                    <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('user-management')">&#128101; User Management</a></li>
+                    <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('certification-management')">&#128187; Certification Management</a></li>
+                    <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('voucher-management')">&#127915; Voucher Management</a></li>
+                    <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('user-request');showWCPrequest();showVoucherRequest()">&#128172; User Request</a></li>
+              </ul>
+            </div>
+         <div class="col-md-6">
+
+             <div class="col-md-9" style="margin: auto;">
+            <div class="content" id="dashboard">
+              <h3 style="color:#141496;">Users >></h3>
+
+              <!-- User Statistics Section -->
+              <div class="stats">
+                <div class="card">
+                  <img style="padding-right: 10px" src="{% static 'assets/users/people.png' %}" height="50px" alt="Informatica">
+                  <div class="card-content">
+                    <div class="card-title">Total Users</div>
+                    <div class="card-value">{{ users|length }}</div>
+                  </div>
+                </div>
+                <div class="card">
+                  <img style="padding-right: 10px" src="{% static 'assets/users/group.png' %}" height="50px" alt="Informatica">
+                  <div class="card-content">
+                    <div class="card-title">Active Users</div>
+                    <div class="card-value">{{ active_count }}</div>
+                  </div>
+                </div>
+                <div class="card">
+                  <img style="padding-right: 10px" src="{% static 'assets/users/ban-user.png' %}" height="50px" alt="Informatica">
+                  <div class="card-content">
+                    <div class="card-title">Inactive Users</div>
+                    <div class="card-value">{{ blocked_count }}</div>
+                  </div>
+                </div>
+              </div>
+              <h3 style="      color: #141496; /* Dark text color for contrast */      ">Certification >></h3>
+
+              <!-- Total Certified Section -->
+              <div class="certified-section">
+                <table class="certified-table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Platform</th>
+                      <th>Certified Users</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><img src="{% static 'assets/icons/aws.png' %}" alt="AWS" > </td>
+                      <td>AWS</td>
+                      <td>80</td>
+                    </tr>
+                    <tr>
+                      <td><img src="{% static 'assets/icons/azure.png' %}" alt="Azure"> </td>
+                      <td>Azure</td>
+                      <td>70</td>
+                    </tr>
+                    <tr>
+                      <td><img src="{% static 'assets/icons/informatica.png' %}" alt="Informatica"> </td>
+                        <td>Informatica</td>
+                      <td>50</td>
+                    </tr>
+                    <tr>
+                      <td><img src="{% static 'assets/icons/powerbi.png' %}" alt="Power BI"> </td>
+                      <td>Power BI</td>
+                      <td>40</td>
+                    </tr>
+                    <tr>
+                      <td><img src="{% static 'assets/icons/snowflake.png' %}" alt="Snowflake"> </td>
+                      <td>Snowflake</td>
+                      <td>30</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <h3 style="      color: #141496; /* Dark text color for contrast */      ">Vouchers >></h3>
+
+
+        <!-- Total Vouchers Section -->
+        <div class="certified-section">
+          <table class="certified-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Platform</th>
+                <th>Available Vouchers</th>
+                <th>Distributed Vouchers</th>
+                <th>Consumed Vouchers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="{% static 'assets/icons/aws.png' %}" alt="AWS"> </td>
+                <td>AWS</td>
+                <td>100</td>
+                <td>80</td>
+                <td>50</td>
+              </tr>
+              <tr>
+                <td><img src="{% static 'assets/icons/azure.png' %}" alt="Azure"> </td>
+                <td>Azure</td>
+                <td>90</td>
+                <td>70</td>
+                <td>40</td>
+              </tr>
+              <tr>
+                <td><img src="{% static 'assets/icons/informatica.png' %}" alt="Informatica"> </td>
+                <td>Informatica</td>
+                <td>80</td>
+                <td>50</td>
+                <td>30</td>
+              </tr>
+              <tr>
+                <td><img src="{% static 'assets/icons/powerbi.png' %}" alt="Power BI"> </td>
+                <td>Power BI</td>
+                <td>70</td>
+                <td>40</td>
+                <td>20</td>
+              </tr>
+              <tr>
+                <td><img src="{% static 'assets/icons/snowflake.png' %}" alt="Snowflake"> </td>
+                <td>Snowflake</td>
+                <td>60</td>
+                <td>30</td>
+                <td>10</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </header>
-
-    <main class="container-fluid curved-section mb-3 main-content">
-        <nav class="col-md-2 bg-light sidebar p-3">
-            <ul class="list-unstyled">
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('dashboard')">&#9201; Dashboard</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('user-management')">&#128101; User Management</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('certification-management')">&#128187; Certification Management</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('voucher-management')">&#127915; Voucher Management</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('news-updates')">&#128196; News & Updates</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('content-management')">&#128213; Content Management</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('reports-analytics')">&#128202; Reports & Analytics</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('settings')">&#9881; Settings</a></li>
-            </ul>
-        </nav>
-
-        <div class="col-md-9" style="margin: auto;">
-            <!-- Dashboard Section -->
-            <div id="dashboard" class="main-section">
-                <h1>Admin Dashboard</h1>
-                <h2>Overview of User Statistics</h2>
-                <div class="metrics-container">
-                    <h3>Total Users</h3>
-                    <p><b>1000</b></p>
-                    <h3>Active Users</h3>
-                    <p><b>800</b></p>
-                    <h3>Blocked Users</h3>
-                    <p><b>50</b></p>
-                </div>
-
-                <h2>Quick Access to Recent Activities</h2>
-                <div>
-                    <h4>New Certifications Added</h4>
-                    <ul>
-                        <li>Certification A</li>
-                        <li>Certification B</li>
-                    </ul>
-                    <h4>Users Registered</h4>
-                    <ul>
-                        <li>User 1</li>
-                        <li>User 2</li>
-                    </ul>
-                </div>
-
-                <h2>Notifications Panel</h2>
-                <div class="info">
-                    <p>System Alerts: <b>No new alerts</b></p>
-                </div>
             </div>
 
-            <!-- User Management Section -->
-            <div id="user-management" class="main-section hidden">
-                <h1>User Management</h1>
-                <div class="table-container">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Registration Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>User1</td>
-                                <td>user1@example.com</td>
-                                <td>Active</td>
-                                <td>2023-01-01</td>
-                            </tr>
-                            <tr>
-                                <td>User2</td>
-                                <td>user2@example.com</td>
-                                <td>Blocked</td>
-                                <td>2023-01-02</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="content hidden" id="user-management">
+            <h3 style="color:#141496;">User Management</h3>
+                <form action="{% url 'insert_users_bulk' %}" method="POST" id="bulkUploadForm">
+                    {% csrf_token %}
+                    <input type="file" id="bulkaddusers" accept=".xls,.xlsx" class="form-control mb-3">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success btn-sm" onclick="handleFileUpload_bulkuser('bulkaddusers')">Upload</button>
+                    </div>
+                </form>
+
                 <button class="btn btn-primary" id="addUserBtn">Add User</button>
-                <div id="user-form"  class="hidden">
-                    <h2>Add User Information</h2>
-                    <form>
-                        <div class="form-group">
-                            <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-success">Submit</button>
-                    </form>
-                </div>
+            <!-- Add User Form -->
+            <div id="user-form" class="hidden">
+                <h3 style="color:#141496;">Add User Information</h3>
+                <form action="{% url 'insert_user' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Username" required>
+                    <input type="hidden" name="password" placeholder="Password">
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="PSID" name="PSID" placeholder="PSID" required>
+                    <label>
+                        <input type="checkbox" name="is_admin"> Admin
+                    </label>
+                    <label>
+                        <input type="checkbox" name="is_active"> Active
+                    </label>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
             </div>
-              
-            <!-- Certification Management Section -->
-            <div id="certification-management" class="main-section hidden">
-                <h1>Certification Management</h1>
-                <h2>Certification List</h2>
+
+            <div id="updateuserform" class="hidden">
+                    <h3 style="color:#141496;">Update User Information</h3>
+                        <form action="{% url 'update_user' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" id="updateUserId" value="{{ user.id }}">
+                            <input type="text" name="username" id="updateUsername" placeholder="Username" value="{{ user.username }}" required>
+<!--                            <input type="password" name="password" id="updatePassword" placeholder="Password">-->
+                            <input type="email" name="email" id="updateEmail" placeholder="Email" value="{{ user.email }}" required>
+
+                            <label>
+                                <input type="checkbox" name="is_Admin" id="updateIsAdmin" {% if user.is_admin %}checked{% endif %}> Admin
+                            </label>
+                            <label>
+                                <input type="checkbox" name="is_Active" id="updateIsActive" {% if user.is_active %}checked{% endif %}> Active
+                            </label>
+
+                            <button type="submit" class="btn btn-success">Update</button>
+                        </form>
+                </div>
+            <h3 style="color:#141496;">Users List</h3>
+            <input type="text" id="userSearch" placeholder="Search by User Name or Email" class="form-control mb-3" oninput="filterUsers()" style="width: 100%; max-width: 400px;"><br>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        {% if users %}
+                            {% for user in users %}
+                                <tr id="row-{{ user.id }}">
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{% if user.is_active %}Active{% else %}Blocked{% endif %}</td>
+                                    <td>{{ user.created_at }}</td>
+                                    <td>
+                                        <button class="btn btn-warning editUserBtn"
+                                            data-id="{{ user.id }}"
+                                            data-username="{{ user.username }}"
+                                            data-email="{{ user.email }}"
+                                            data-is-admin="{{ user.is_admin }}"
+                                            data-is-active="{{ user.is_active }}">Edit</button>
+                                        <button class="btn btn-danger deleteUserBtn" data-id="{{ user.id }}" onclick="deleteUser(this)">Delete</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5">No users found.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+            <div id="certification-management" class="content hidden">
+                <h3 style="color:#141496;">Certification Management</h3>
+
+
+                <form action="{% url 'insert_cert_bulk' %}" method="POST" id="bulkUploadCertificationForm">
+                    {% csrf_token %}
+                    <input type="file" id="certificationFile" accept=".xls,.xlsx" class="form-control mb-3">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success" onclick="handleFileUpload_cert('certificationFile')">Upload</button>
+                    </div>
+                </form>
+                <button class="btn btn-primary" id="addCertiBtn">Add Certification</button>
+            <!-- Add Certification Form -->
+            <div id="certification-form" class="hidden">
+                <h3 style="color:#141496;">Add Certification Information</h3>
+                <form id="certForm">
+                    {% csrf_token %}
+                    <input type="text" name="ID" placeholder="CertID" required>
+                    <input type="text" name="Name" placeholder="CertificationName" required>
+                    <input type="text" name="Provider" placeholder="Provider" required>
+                    <select name="Status">
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
+            </div>
+                <h3 style="color:#141496;">Certification List</h3>
                 <div class="table-container">
-                    <input type="text" placeholder="Search by Certification Name or Provider" class="form-control mb-3">
-                    <table class="table">
+                    <input type="text" id="certificationSearch" placeholder="Search by Certification Name or Provider" class="form-control mb-3" oninput="filterData('certificationSearch', 'certificationDataTableBody', [1, 2])" style="width: 100%; max-width: 400px;">
+                    <table class="table" id="certificationDataTable">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Provider</th>
                                 <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Certification items will be dynamically inserted here -->
+                        <tbody id="certificationDataTableBody">
+                            {% if certifications %}
+                                {% for certification in certifications %}
+                                    <tr id="certification-row-{{ certification.id }}">
+                                        <td>{{ certification.id }}</td>
+                                        <td class="editable" data-field="name">{{ certification.name }}</td>
+                                        <td class="editable" data-field="provider">{{ certification.provider }}</td>
+                                        <td class="editable" data-field="status">{{ certification.status }}</td>
+                                        <td>
+                                            <button class="btn btn-warning editCertificationBtn" data-id="{{ certification.id }}">Edit</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5">No certifications found.</td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
-            
-                <h2>Certification Actions</h2>
-                <button class="btn btn-primary" onclick="showAddCertificationForm()">Add Certification</button>
-                <button class="btn btn-warning" onclick="showEditCertificationForm()">Edit Certification</button>
-                <button class="btn btn-danger" onclick="deleteCertification()">Delete Certification</button>
             </div>
-            
             <!-- Voucher Management Section -->
-            <div id="voucher-management" class="main-section hidden">
-                <h1>Voucher Management</h1>
-                <h2>Upload Vouchers</h2>
-                <input type="file" accept=".xls,.xlsx" class="form-control mb-3">
-                <button class="btn btn-success">Upload</button>
-                
-                <h2>Voucher List</h2>
-                <input type="text" placeholder="Search by Certification Name or Voucher Code" class="form-control mb-3">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Certification Name</th>
-                            <th>Voucher Code</th>
-                            <th>Expiration Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Voucher items will be dynamically inserted here -->
-                    </tbody>
-                </table>
+            <div id="voucher-management" class="content hidden">
+                <div class="voucher-container">
+                    <h3 style="color:#141496;">Voucher Management</h3>
+                    <form action="{% url 'save_vouchers' %}" method="POST" id="bulkUploadVouchersForm">
+                        {% csrf_token %}
+                        <input type="file" id="voucherFile" accept=".xls,.xlsx" class="form-control mb-3">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success" onclick="handleFileUpload('voucherFile')">Upload</button>
+                        </div>
+                    </form>
+
+                    <button class="btn btn-primary" id="addVoucherBtn">Add Voucher</button>
+                    <!-- Add Voucher Form -->
+                    <div id="Voucher-form" class="hidden">
+                        <h3 style="color:#141496;">Add Voucher Information</h3>
+                        <form id="voucherForm">
+                            {% csrf_token %}
+                            <input type="text" name="CertificationName" placeholder="CertificationName" required>
+                            <input type="text" name="Vouchercode" placeholder="Vouchercode" required>
+                            <input type="text" name="Provider" placeholder="Provider" required>
+                            <input type="number" name="Discountpercentage" placeholder="Discount Percentage" required>
+                            <input type="date" id="dateInput" name="dateInput" placeholder="Expiration Date" required min="<?php echo date('Y-m-d'); ?>">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
+                    </div>
+
+                    <h3 style="color:#141496;">Voucher List</h3>
+                    <input type="text" id="voucherSearch" placeholder="Search by Certification Name or Voucher Code" class="form-control mb-3" oninput="filterVouchers()" style="width: 100%; max-width: 400px;"><br>
+                    <table class="table" id="voucherTable">
+                        <thead>
+                            <tr>
+                                <th>Certification Name</th>
+                                <th>Voucher Code</th>
+                                <th>Expiration Date</th>
+                                <th>Discounted Percentage</th>
+                                <th>PSID</th>
+                                <th>Updated Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="voucherTableBody">
+                            <!-- Voucher items will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <div id="user-request" class="content hidden">
+                <h3 style="color:#141496;text-align: center;">User Request Management</h3>
+                <div class="user-container">
+                        <div class="left-card" >
+                            <h3>WCP Test requests</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Certification Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="WCPrequest">
 
-            <!-- News and Updates Section -->
-            <div id="news-updates" class="main-section hidden">
-                <h1>News and Updates</h1>
-                <h2>News List</h2>
-                <input type="text" placeholder="Search by Keywords or Dates" class="form-control mb-3">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- News items will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            
-                <h2>News Actions</h2>
-                <button class="btn btn-primary" onclick="showAddNewsForm()">Add News</button>
-                <button class="btn btn-warning" onclick="showEditNewsForm()">Edit News</button>
-                <button class="btn btn-danger" onclick="deleteNews()">Delete News</button>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="right-card">
+                            <h3>Vouchers request</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Certification Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="Voucherrequest">
+
+                                </tbody>
+                            </table>
+                            <div id="recordDiv" style="display:none;"></div>
+                             <div id="voucherDiv" style="display:none;">
+<!--                                 <input type="text" id="voucher_code_box" name="voucher_code_box" placeholder="Enter Voucher"><br><br>-->
+                                 <select id="voucher_code_box" name="voucher_code_box">
+                                    <option value="" disabled selected>Select a Voucher</option>
+                                    {% for voucher in inactive_voucher_codes_list %}
+                                        <option value="{{ voucher.voucher_code }}">{{ voucher.voucher_code }}</option>
+                                    {% empty %}
+                                        <option value="">No vouchers available</option>
+                                    {% endfor %}
+                                </select>
+                                 <button onclick="actionVoucherRequests(document.getElementById('recordDiv').innerHTML,'approve')">Save</button>
+                            </div>
+                        </div>
+                </div>
             </div>
-
-            <!-- Content Management Section -->
-            <div id="content-management" class="main-section hidden">
-                <h1>Content Management</h1>
-                <h2>Content List</h2>
-                <input type="text" placeholder="Search by Title or Certification" class="form-control mb-3">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Associated Certification</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Content items will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            
-                <h2>Content Actions</h2>
-                <button class="btn btn-primary" onclick="showAddContentForm()">Add Content</button>
-                <button class="btn btn-warning" onclick="showEditContentForm()">Edit Content</button>
-                <button class="btn btn-danger" onclick="deleteContent()">Delete Content</button>
-            </div>
-
-            <!-- Reports and Analytics Section -->
-            <div id="reports-analytics" class="main-section hidden">
-                <h1>Reports and Analytics</h1>
-                <h2>User Progress Reports</h2>
-                <button class="btn btn-info" onclick="generateUserProgressReport()">Generate Report</button>
-                <div id="progress-report-chart"></div>
-            
-                <h2>Certification Statistics</h2>
-                <div id="certification-stats"></div>
-            </div>
-
-            <!-- Settings Section -->
-            <div id="settings" class="main-section hidden">
-                <h1>Settings</h1>
-                <h2>Admin Settings</h2>
-                <button class="btn btn-primary" onclick="showAdminSettingsForm()">Change Account Details</button>
-                <button class="btn btn-secondary" onclick="manageNotificationPreferences()">Manage Notification Preferences</button>
-            
-                <h2>System Settings</h2>
-                <button class="btn btn-info" onclick="configureSystemSettings()">Configure System-wide Settings</button>
-            </div>
-            
-        </div>
-    </main>
-
-    <footer class="text-center py-3 curved-section footer">
-        © 2024 LTIMindtree
-    </footer>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+             </div>
+          </div>
+  </main>
     <script>
-        function showSection(section) {
-            // Hide all sections
-            document.querySelectorAll('.main-section').forEach(s => {
-                s.classList.add('hidden');
-            });
-            // Show the selected section
-            document.getElementById(section).classList.remove('hidden');
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
 
-        // Show the dashboard by default on page load
         document.addEventListener('DOMContentLoaded', () => {
-            showSection('dashboard');
+            showSection('dashboard'); // Show the dashboard by default
+        });
+
+        function showSection(section) {
+            document.querySelectorAll('.content').forEach(s => {
+                s.classList.remove('visible');
+                s.classList.add('hidden');
+            });
+
+            // Show the selected section
+            const selectedSection = document.getElementById(section);
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden');
+                selectedSection.classList.add('visible');
+            }
+        }
+
+        function fetchUsers() {
+            fetch(`http://127.0.0.1:8000/user_list/`)
+                .then(response => response.json())
+                .then(data => {
+                    const userTableBody = document.getElementById('userTableBody');
+                    userTableBody.innerHTML = ''; // Clear existing rows
+
+                    data.users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.id = `row-${user.id}`;
+                        row.innerHTML = `
+                            <td>${user.username}</td>
+                            <td>${user.email}</td>
+                            <td>${user.is_active ? 'Active' : 'Blocked'}</td>
+                            <td>${user.created_at}</td>
+                            <td>
+                                <button class="btn btn-warning editUserBtn"
+                                        data-id="${user.id}"
+                                        data-username="${user.username}"
+                                        data-email="${user.email}"
+                                        data-is-admin="${user.is_admin}"
+                                        data-is-active="${user.is_active}">Edit</button>
+                                <button class="btn btn-danger deleteUserBtn"
+                                        data-id="${user.id}">Delete</button>
+                            </td>
+                        `;
+                        userTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                    alert('Failed to load users.');
+                });
+        }
+
+        // Call fetchUsers initially to load users
+        fetchUsers();
+
+
+    // Delete User function
+    function deleteUser(button) {
+        const userId = button.getAttribute('data-id'); // Retrieve the user ID from data-id
+        const rowId = `row-${userId}`; // Construct the row ID
+        const csrfToken = getCookie('csrftoken');
+
+        fetch(`http://127.0.0.1:8000/delete_user/${userId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                const row = document.getElementById(rowId);
+                if (row) {
+                    row.remove(); // Remove the corresponding row
+                    alert('User deleted successfully');
+                    fetchUsers(currentPage); // Refresh the user list
+                }
+            } else {
+                return response.json().then(data => {
+                    const errorMessage = data.error || 'Unknown error';
+                    alert('Error deleting user: ' + errorMessage);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Network error occurred: ' + error.message);
+        });
+    }
+
+    // Initialize pagination variables
+    let currentuserPage = 1; // Start on the first page
+    const usersPerPage = 10; // Define how many users to show per page
+
+    // Show the dashboard by default on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        showSection('dashboard'); // Show the dashboard
+        fetchUsers(currentuserPage); // Load users for the first page
+
+        // Add User Button functionality
+        document.getElementById('addUserBtn').onclick = function() {
+            const userForm = document.getElementById('user-form');
+            userForm.classList.toggle('hidden'); // Toggle visibility
+        };
+
+        document.getElementById('addCertiBtn').onclick = function() {
+            const certiForm = document.getElementById('certification-form');
+            certiForm.classList.toggle('hidden'); // Toggle visibility
+        };
+
+        document.getElementById('addVoucherBtn').onclick = function() {
+            const voucherForm = document.getElementById('Voucher-form');
+            voucherForm.classList.toggle('hidden'); // Toggle visibility
+        };
+
+        // Event delegation for edit and delete buttons
+        document.getElementById('userTableBody').addEventListener('click', function(event) {
+            if (event.target.classList.contains('editUserBtn')) {
+                const button = event.target;
+                const userId = button.getAttribute('data-id');
+                const username = button.getAttribute('data-username');
+                const email = button.getAttribute('data-email');
+                const isAdmin = button.getAttribute('data-is-admin') === 'true';
+                const isActive = button.getAttribute('data-is-active') === 'true';
+
+                // Populate the update form fields
+                const updateUserId = document.getElementById('updateUserId');
+                const updateUsername = document.getElementById('updateUsername');
+                const updateEmail = document.getElementById('updateEmail');
+                const updateIsAdmin = document.getElementById('updateIsAdmin');
+                const updateIsActive = document.getElementById('updateIsActive');
+                const updateForm = document.getElementById('updateuserform');
+
+                if (updateUserId && updateUsername && updateEmail && updateIsAdmin && updateIsActive && updateForm) {
+                    updateUserId.value = userId;
+                    updateUsername.value = username;
+                    updateEmail.value = email;
+                    updateIsAdmin.checked = isAdmin;
+                    updateIsActive.checked = isActive;
+
+                    // Show the update user form
+                    updateForm.classList.remove('hidden');
+                } else {
+                    console.error('One or more form elements are missing in the DOM.');
+                }
+            } else if (event.target.classList.contains('deleteUserBtn')) {
+                deleteUser(event.target);
+            }
         });
 
 
-        document.getElementById('addUserBtn').onclick = function() {
-        const userForm = document.getElementById('user-form');
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUsers(1); // Call to fetch initial user data
+        });
 
-        if (userForm.classList.contains('hidden')) {
-            userForm.classList.remove('hidden');
-        } else {
-                userForm.classList.add('hidden');
+
+        // Handle form submission for updating user
+        document.getElementById('updateUserForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const userId = document.getElementById('updateUserId').value;
+            const username = document.getElementById('updateUsername').value;
+            const email = document.getElementById('updateEmail').value;
+            const isAdmin = document.getElementById('updateIsAdmin').checked;
+            const isActive = document.getElementById('updateIsActive').checked;
+            const csrfToken = getCookie('csrftoken'); // Ensure this function is defined
+
+            fetch(`http://127.0.0.1:8000/update_user/`, {
+                method: 'POST', // or PUT, depending on your API
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({
+                    id: userId,
+                    username: username,
+                    email: email,
+                    is_admin: isAdmin,
+                    is_active: isActive,
+                })
+            })
+            .then(response => {
+                // Check if the response is OK
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        console.error('Server response:', text);
+                        throw new Error(`Error: ${response.status} ${text}`);
+                    });
+                }
+                // Attempt to parse as JSON
+                return response.json();
+            })
+            .then(data => {
+                alert('User updated successfully');
+                fetchUsers(currentPage); // Refresh the user list
+                document.getElementById('updateUserForm').reset(); // Reset the form
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Error updating user: ' + error.message);
+            });
+        });
+    });
+
+
+
+
+            function handleFileUpload(fileInputId) {
+                const fileInput = document.getElementById(fileInputId);
+
+                if (!fileInput) {
+                    console.error('File input element not found');
+                    return;
+                }
+
+                const file = fileInput.files[0];
+                if (!file) {
+                    alert('Please select a file first');
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+
+                        // Assume first sheet
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+
+                        // Convert to JSON
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                        console.log('Parsed JSON Data:', jsonData); // Debugging line
+
+                        // Validate the data and collect errors
+                        const { validatedData, errors } = validateData(jsonData);
+
+                        if (errors.length > 0) {
+                            alert(`Errors found:\n${errors.join('\n')}`);
+                            return;
+                        }
+
+                        // Send the parsed data to the server
+                        sendDataToServer(validatedData, fileInput);
+                    } catch (error) {
+                        console.error('Error processing file:', error);
+                        alert('Error processing the Excel file. Please make sure it\'s a valid Excel file.');
+                    }
+                };
+
+                reader.onerror = function(error) {
+                    console.error('Error reading file:', error);
+                    alert('Error reading the file');
+                };
+
+                reader.readAsArrayBuffer(file);
             }
-        };
-    </script>
+
+            function validateData(jsonData) {
+                const errors = [];
+                const validatedData = jsonData.reduce((acc, item, index) => {
+                    const { CertificationName, VoucherCode, ExpiryDate, Discounted_Percentage, PSID, is_active, update_time } = item;
+
+                    // Log the current item being validated
+                    console.log(`Validating row ${index + 1}:`, item);
+
+                    // Check for required fields, allowing 0 as a valid value
+                    if (
+                        CertificationName === undefined ||
+                        VoucherCode === undefined ||
+                        ExpiryDate === undefined ||
+                        Discounted_Percentage === undefined
+                    ) {
+                        errors.push(`Missing fields in row ${index + 1}`);
+                        return acc; // Skip this item
+                    }
+
+                    // Return valid item, allowing null values for PSID, is_active, and update_time
+                    acc.push({ CertificationName, VoucherCode, ExpiryDate, Discounted_Percentage, PSID, is_active, update_time });
+                    return acc;
+                }, []);
+
+                return { validatedData, errors };
+            }
+
+            document.getElementById('voucherForm').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Gather the form data
+                const formData = new FormData(this);
+                const validatedData = [{
+                    CertificationName: formData.get('CertificationName'),
+                    VoucherCode: formData.get('Vouchercode'),
+                    ExpiryDate: formData.get('dateInput'),
+                    // Include any additional fields if necessary
+                    Discounted_Percentage: formData.get('Discountpercentage'), // Placeholder for additional data
+                    PSID: null,                   // Placeholder for additional data
+                    IsActive: true,               // Placeholder for additional data
+                    UpdateTime: new Date().toISOString() // Placeholder for additional data
+                }];
+
+                // Call the existing function to send data to the server
+                sendDataToServer(validatedData);
+            });
+
+
+            function sendDataToServer(validatedData, fileInput) {
+                // Transform the validatedData to match the expected keys
+                const transformedData = validatedData.map(voucher => ({
+                    certification_name: voucher.CertificationName, // Map to expected key
+                    voucher_code: voucher.VoucherCode,              // Map to expected key
+                    expiration_date: voucher.ExpiryDate,            // Map to expected key
+                    discount_percentage: voucher.Discounted_Percentage, // Map to expected key
+                    psid: voucher.PSID || null,
+                    is_active: voucher.IsActive || null,
+                    update_time: voucher.UpdateTime || null
+                }));
+
+                const requestData = { items: transformedData }; // Wrap in an object
+
+                fetch("{% url 'save_vouchers' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') // Ensure CSRF token is sent
+                    },
+                    body: JSON.stringify(requestData) // Send the wrapped data
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error('Network response was not ok: ' + response.status + ' ' + text);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Voucher added successfully!'); // Notify user of success
+
+                    // Clear the input fields
+                    if (fileInput) {
+                        fileInput.value = ''; // Clear the file input if it exists
+                    }
+
+                    // Reset the form fields
+                    const form = document.getElementById('voucherForm'); // Get the form element
+                    form.reset(); // Reset the form fields
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('There was an error sending the data to the server: ' + error.message);
+                });
+            }
+
+            let currentPage1 = 1; // Track the current page
+            const vouchersPerPage = 5; // Number of vouchers to display per page
+            const fetchVouchersUrl = "{% url 'get_vouchers' %}";
+
+            async function fetchVoucherData() {
+                try {
+                    const response = await fetch(fetchVouchersUrl); // Fetch all vouchers
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    if (data.success) {
+                        populateTable(data.vouchers); // Populate the table with fetched vouchers
+                        populateDropdown(data.inactive_voucher_codes); // Populate the dropdown with inactive vouchers
+                    } else {
+                        console.error('Error fetching vouchers:', data.error);
+                    }
+                } catch (error) {
+                    console.error('Error fetching voucher data:', error);
+                }
+            }
+
+            // Call fetchVoucherData every 5 seconds
+            setInterval(fetchVoucherData, 1000);
+
+            // Initial call to populate data on page load
+            fetchVoucherData();
+
+            function populateTable(data) {
+                const tableBody = document.querySelector('#voucherTable tbody');
+                tableBody.innerHTML = ''; // Clear existing data
+
+                data.forEach(voucher => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${voucher.certification_name}</td>
+                        <td>${voucher.voucher_code}</td>
+                        <td>${voucher.expiration_date}</td>
+                        <td>${voucher.discount_percentage}</td>
+                        <td>${voucher.psid}</td>
+                        <td>${voucher.update_time}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function populateDropdown(inactive_voucher_codes_list) {
+                const selectBox = document.getElementById('voucher_code_box');
+                selectBox.innerHTML = '<option value="" disabled selected>Select a Voucher</option>'; // Reset options
+
+                if (inactive_voucher_codes_list.length > 0) {
+                    inactive_voucher_codes_list.forEach(voucher => {
+                        const option = document.createElement('option');
+                        option.value = voucher; // Use the voucher code directly
+                        option.textContent = voucher; // Use the voucher code directly
+                        selectBox.appendChild(option);
+                    });
+                } else {
+                    console.log('No vouchers available'); // Log if no vouchers are available
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'No vouchers available';
+                    selectBox.appendChild(option);
+                }
+
+                // Retain the selected value if it exists
+                const selectedValue = selectBox.getAttribute('data-selected-value');
+                if (selectedValue) {
+                    selectBox.value = selectedValue; // Set the dropdown to the previously selected value
+                }
+            }
+
+            // Example of how to set the selected value when a voucher is selected
+            document.getElementById('voucher_code_box').addEventListener('change', function() {
+                const selectedValue = this.value;
+                this.setAttribute('data-selected-value', selectedValue); // Store the selected value
+            });
+
+
+            function updatePagination(totalCount, currentPage1) {
+                const totalPages = Math.ceil(totalCount / vouchersPerPage);
+
+                // Enable/disable buttons based on the current page
+                document.getElementById('prevVoucherBtn').disabled = (currentPage1 === 1);
+                document.getElementById('nextVoucherBtn').disabled = (currentPage1 === totalPages);
+            }
+
+            function changePage(direction) {
+                currentPage1 += direction;
+
+                // Ensure currentPage is within bounds
+                if (currentPage1 < 1) currentPage1 = 1;
+
+                fetchVoucherData(currentPage1); // Fetch data for the new page
+            }
+
+            // Initial fetch
+            fetchVoucherData(currentPage1);
+
+            document.addEventListener('DOMContentLoaded', () => fetchVoucherData(currentPage1));
+
+      function handleFileUpload_bulkuser(inputId) {
+            const fileInput = document.getElementById(inputId);
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    // Send the parsed data to the server
+                    fetch("{% url 'insert_users_bulk' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // Ensure CSRF token is sent
+                        },
+                        body: JSON.stringify(jsonData)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Clear the file input
+                        fileInput.value = '';
+
+                        // Fetch and display updated users data
+                        fetchUsers(); // Call to refresh the displayed users
+
+                        // Optionally, show a success message
+                        alert('Users uploaded successfully!');
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('Failed to upload users: ' + error.message); // Alert user about the failure
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert("Please select a file.");
+            }
+        }
+
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        //let certData = [];
+        let voucherData = [];
+
+    function displayVoucherData(data) { // {
+        voucherData = data; // Store the data for pagination
+        currentPage = 1; // Reset to the first page
+        renderTable('voucher'); // Render the table with new data
+    } // }
+
+    function saveData(type) {
+        const saveBtn = type === 'certification' ? document.getElementById('saveCertificationBtn') : document.getElementById('saveVoucherBtn');
+
+        // Check if there is any data to save
+        const data = type === 'certification' ? certData : voucherData;
+        if (!data || data.length === 0) {
+            alert('No data to save!');
+            return;
+        }
+
+        // Show loading state
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = 'Saving...';
+        saveBtn.disabled = true;
+
+        const items = data.map(row => {
+            if (type === 'certification') {
+                return {
+                    id: row['ID'] || '',
+                    name: row['Name'] || '',
+                    provider: row['Provider'] || '',
+                    status: row['Status'] || ''
+                };
+            } else {
+                return {
+                    certification_name: row['Certification Name'] || '',
+                    voucher_code: row['Voucher Code'] || '',
+                    expiration_date: row['Expiry Date'] || '',
+                    discount_percentage: (row['Discounted_Percentage'] !== undefined && row['Discounted_Percentage'] !== null)
+                        ? row['Discounted_Percentage']
+                        : '',
+                    PSID: row['PSID'] || '',
+                    isactive: row['status'] || '',
+
+                };
+            }
+        });
+
+        // Send data to the server
+        fetch(`/save_${type}s/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ items })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Data saved successfully!');
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error saving data:', error);
+            alert('Error saving data. Please try again.');
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        });
+    }
+
+
+    function filterVouchers() {
+        const searchInput = document.getElementById('voucherSearch').value.toLowerCase();
+        const tbody = document.getElementById('voucherTableBody');
+        const rows = tbody.getElementsByTagName('tr');
+
+        // Loop through all rows and hide those that don't match the search query
+        Array.from(rows).forEach(row => {
+            const certificationName = row.cells[0].textContent.toLowerCase(); // Assuming name is in the first column
+            const voucherCode = row.cells[1].textContent.toLowerCase(); // Assuming code is in the second column
+
+            // Check if either the certification name or voucher code includes the search input
+            if (certificationName.includes(searchInput) || voucherCode.includes(searchInput)) {
+                row.style.display = ''; // Show row
+            } else {
+                row.style.display = 'none'; // Hide row
+            }
+        });
+    }
+
+        function filterData(searchInputId, tableBodyId, columnIndices) {
+            const searchInput = document.getElementById(searchInputId).value.toLowerCase();
+            const tbody = document.getElementById(tableBodyId);
+            const rows = tbody.getElementsByTagName('tr');
+
+        // Loop through all rows and hide those that don't match the search query
+        Array.from(rows).forEach(row => {
+            let matchFound = false;
+
+            // Check specified columns for matches
+            columnIndices.forEach(index => {
+                const cellText = row.cells[index].textContent.toLowerCase();
+                if (cellText.includes(searchInput)) {
+                    matchFound = true;
+                }
+            });
+
+            // Show or hide the row based on the search result
+            row.style.display = matchFound ? '' : 'none'; // Show if match found, otherwise hide
+        });
+    }
+
+         function handleFileUpload_cert(inputId) {
+            const fileInput = document.getElementById(inputId);
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    // Send the parsed data to the server
+                    fetch("{% url 'insert_cert_bulk' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // Ensure CSRF token is sent
+                        },
+                        body: JSON.stringify(jsonData)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Clear the file input
+                        fileInput.value = '';
+
+                        // Refresh the certifications data to show updated data in the browser
+                        fetchCertifications(); // Call to refresh the displayed certifications
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('Failed to upload certifications.'); // Alert user about the failure
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert("Please select a file.");
+            }
+        }
+
+        let currentPage_cert = 1; // Current page for certifications
+        const rowsPerPage_cert = 10; // Number of certifications per page
+        let certData = []; // Array to store certification data
+
+        function updatePaginationButtons(totalPages) {
+            const prevButton = document.getElementById('prevCertificationBtn');
+            const nextButton = document.getElementById('nextCertificationBtn');
+
+            prevButton.disabled = currentPage_cert === 1; // Disable if on the first page
+            nextButton.disabled = currentPage_cert === totalPages; // Disable if on the last page
+        }
+
+        function changePage_cert(direction, type) {
+            if (type === 'certification') {
+                currentPage_cert += direction; // Change the page based on direction
+                fetchCertifications(); // Fetch the new page of certifications
+            }
+        }
+
+        // Function to fetch certifications
+        function fetchCertifications() {
+            fetch(`http://127.0.0.1:8000/certification_list/`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Response status:', response.status); // Log status for debugging
+                        return response.json().then(errData => {
+                            console.error('Error response body:', errData); // Log the error response
+                            throw new Error('Network response was not ok');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.certifications && Array.isArray(data.certifications)) {
+                        certData = data.certifications; // Store fetched data
+                    } else {
+                        certData = []; // Set to empty array if no certifications
+                    }
+                    renderTable_cert(); // Render the table with new data
+                    // Removed pagination functionality
+                })
+                .catch(error => {
+                    console.error('Error fetching certifications:', error);
+                    alert('Failed to load certifications.'); // Alert user about the failure
+                });
+        }
+
+
+
+        function renderTable_cert() {
+            const tbody = document.getElementById('certificationDataTableBody');
+            tbody.innerHTML = ''; // Clear existing data
+
+            if (certData.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="5">No certifications found.</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+
+            certData.forEach(certification => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="editable" data-field="id">${certification.id}</td>
+                    <td class="editable" data-field="name">${certification.name}</td>
+                    <td class="editable" data-field="provider">${certification.provider}</td>
+                    <td class="editable" data-field="status">${certification.status}</td>
+                    <td>
+                        <button class="btn btn-warning editCertificationBtn"
+                                data-id="${certification.id}"
+                                data-name="${certification.name}"
+                                data-provider="${certification.provider}"
+                                data-status="${certification.status}">Edit</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('certificationDataTableBody').addEventListener('click', function(event) {
+                if (event.target.classList.contains('editCertificationBtn')) {
+                    const row = event.target.closest('tr');
+                    const cells = row.querySelectorAll('.editable');
+
+                    if (cells.length > 0) {
+                        cells.forEach(cell => {
+                            const field = cell.dataset.field;
+                            const currentValue = cell.textContent.trim();
+
+                            // Create an input element
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            input.className = 'form-control';
+                            input.value = currentValue;
+                            input.dataset.field = field;
+
+                            // Replace cell content with the input element
+                            cell.innerHTML = ''; // Clear the cell
+                            cell.appendChild(input); // Add the input
+                            input.focus(); // Focus on the input
+
+                            // Save changes on blur
+                            input.addEventListener('blur', function() {
+                                const newValue = input.value;
+                                if (newValue !== currentValue) { // Check if value has changed
+                                    cell.innerHTML = newValue; // Update cell with new value
+                                    updateCertification(row.querySelector('.editCertificationBtn').dataset.id, field, newValue); // Call update function
+                                } else {
+                                    cell.innerHTML = currentValue; // Restore original value if unchanged
+                                }
+                            });
+
+                            // Handle pressing Enter to save
+                            input.addEventListener('keypress', function(e) {
+                                if (e.key === 'Enter') {
+                                    input.blur(); // Trigger blur to save
+                                }
+                            });
+                        });
+                    } else {
+                        console.error('No editable cells found in the row');
+                    }
+                }
+            });
+        });
+        function updateCertification(certId, field, value) {
+            const csrfToken = getCookie('csrftoken'); // Get CSRF token for security
+
+            // Create the payload for the update request
+            const payload = {
+                [field]: value // Dynamically set the field to update
+            };
+
+            fetch(`/update_certification/${certId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error || 'Network response was not ok');
+                    });
+                }
+                return response.json(); // Parse JSON response
+            })
+            .then(data => {
+                alert('Certification updated successfully!'); // Notify user of success
+                fetchCertifications(); // Refresh the certification list
+            })
+            .catch(error => {
+                console.error('Error updating certification:', error);
+                alert('Error updating certification: ' + error.message); // Notify user of error
+            });
+        }
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCertifications(); // Load certifications for the first page
+        });
+
+        function showWCPrequest(){
+            const tbody = document.getElementById("WCPrequest");
+            fetch( '/get_wcp_request_records/')
+                .then(response => response.json())
+                .then(data => {
+                tbody.innerHTML = ''; // Clear existing data
+                data.forEach(record=>
+                {
+                 var button1 = document.createElement("button");
+                 button1.textContent = "WCP Assigned";
+                  button1.onclick = function() {
+                            actionVoucherRequests(record.id,'assign');
+                        };
+                 var buttonContainer = document.createElement("div");
+                 buttonContainer.style.display = "flex"; // For better button alignment
+                 buttonContainer.appendChild(button1);
+                const row=document.createElement('tr');
+                const idCell=document.createElement('td');
+                const usernameCell=document.createElement('td');
+                const certNameCell=document.createElement('td');
+                const actionCell=document.createElement('td');
+                idCell.textContent=record.id;
+                usernameCell.textContent=record.employee_name;
+                certNameCell.textContent=record.certification_name;
+                actionCell.appendChild(buttonContainer);
+                row.appendChild(idCell);
+                row.appendChild(usernameCell);
+                row.appendChild(certNameCell);
+                row.appendChild(actionCell);
+                tbody.appendChild(row);
+                });
+                })
+                .catch(error =>{
+                console.error('Error fetching data:',error);
+                });
+            };
+        function showVoucherRequest(){
+            const tbody = document.getElementById("Voucherrequest");
+            fetch( '/get_wcp_completed_records/')
+                .then(response => response.json())
+                .then(data => {
+                tbody.innerHTML = ''; // Clear existing data
+                data.forEach(record=>
+                {
+                 var button1 = document.createElement("button");
+                 button1.textContent = "Assign Voucher";
+                 button1.onclick = function() {
+                            getVoucher(record.id,record.certification_name);
+                        };
+                 var button2 = document.createElement("button");
+                 button2.textContent = "Decline";
+                 button2.onclick = function() {
+                            actionVoucherRequests(record.id, 'decline'); // Add 'decline' action
+                        };
+                 var buttonContainer = document.createElement("div");
+                 buttonContainer.style.display = "flex"; // For better button alignment
+                 buttonContainer.appendChild(button1);
+                 buttonContainer.appendChild(button2);
+                 button1.style.width = "45%";
+                 button2.style.width = "45%";
+                const row=document.createElement('tr');
+                const idCell=document.createElement('td');
+                const usernameCell=document.createElement('td');
+                const certNameCell=document.createElement('td');
+                const actionCell=document.createElement('td');
+                idCell.textContent=record.id;
+                usernameCell.textContent=record.employee_name;
+                certNameCell.textContent=record.certification_name;
+                actionCell.appendChild(buttonContainer);
+                row.appendChild(idCell);
+                row.appendChild(usernameCell);
+                row.appendChild(certNameCell);
+                row.appendChild(actionCell);
+                tbody.appendChild(row);
+                });
+                })
+                .catch(error =>{
+                console.error('Error fetching data:',error);
+                });
+            };
+
+            function actionVoucherRequests(recordId,action) {
+            console.log(`WCP Assigned clicked for record ${recordId}`);
+
+
+             fetch(`/update_status_voucher/${recordId}`, {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                },
+                 body: JSON.stringify({ action: `${action}`})
+             })
+              .then(response => response.json())
+
+         .catch(error => {
+           console.error('Error:', error);
+         });
+        }
+
+           function showVoucherDiv(recordId){
+                document.getElementById("voucherDiv").style.display = "block";
+                document.getElementById("recordDiv").innerHTML=`${recordId}`;
+            <!--    document.getElementById("idValue").textContent = `${recordId}`;-->
+            }
+
+        function filterUsers() {
+            const searchInput = document.getElementById('userSearch').value.toLowerCase();
+            const tbody = document.getElementById('userTableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            // Loop through all rows and hide those that don't match the search query
+            Array.from(rows).forEach(row => {
+                const userName = row.cells[0].textContent.toLowerCase();
+                const userEmail = row.cells[1].textContent.toLowerCase();
+                if (userName.includes(searchInput) || userEmail.includes(searchInput)) {
+                    row.style.display = ''; // Show row
+                } else {
+                    row.style.display = 'none'; // Hide row
+                }
+            });
+        }
+
+        document.getElementById('certForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true; // Disable the button
+
+            // Gather the form data
+            const formData = new FormData(this);
+            const data = {
+                ID: formData.get('ID'),
+                Name: formData.get('Name'),
+                Provider: formData.get('Provider'),
+                Status: formData.get('Status')
+            };
+
+            // Send the data as JSON
+            fetch("{% url 'insert_cert_bulk' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // Handle the response
+                alert(data.message || data.error); // Show a message to the user
+
+                // Clear the input fields
+                this.reset();
+
+                // Refresh the displayed certifications
+                if (data.success) {
+                    fetchCertifications(); // Fetch the latest data
+                }
+            })
+            .catch(error => console.error('Error:', error))
+            .finally(() => {
+                submitButton.disabled = false; // Re-enable the button after processing
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').setAttribute('min', today);
+        });
+
+         function getVoucher(recordId,certificationName){
+            console.log(` clicked for record ${recordId} ${certificationName}`);
+            fetch( '/get_voucher/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ 'recordId': `${recordId}`,'certificationName':`${certificationName}`})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.voucher_code) {
+                    count=data.available_vouchers;
+                    alert(`${count} vouchers available`)
+                } else {
+                    alert('No voucher available for this certification');
+                }
+            })
+            .catch(error =>{
+            console.error('Error fetching data:',error);
+            });
+        }
+  </script>
+
+  <footer>
+    <p>© <strong class="sitename">Certe.</strong> All Rights Reserved</p>
+  </footer>
+
 </body>
+
 </html>

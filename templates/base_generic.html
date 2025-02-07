@@ -1,10 +1,11 @@
 {% load static %}
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} CERTE {% endblock %}</title>
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -47,6 +48,7 @@
             margin-bottom: 30px;
         }
     </style>
+
 </head>
 <body>
 
@@ -54,9 +56,9 @@
         <img src="{% static 'logo.png' %}" alt="Logo" class="logo">
         <h3 class="text-center mb-4">Login to Your Account</h3>
 
-        <form method="POST" id="login-form">
+        <form method="POST" id="login-form" action="{% url 'login' %}"><!---action="{% url 'login' %}"--->
+            {% csrf_token %}
             <div class="form-group">
-                {% csrf_token %}
                 <input type="text" class="form-control form-control-lg" id="username" name="username" required="">
                 <label for="username">Username</label>
             </div>
@@ -72,19 +74,56 @@
         <div class="alert alert-info" id="logout-alert" style="display: none;">
             You have been logged out.
         </div>
+        <div id="message" style="color: red; display: none;"></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function displayMessage(message, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = message;
+            messageElement.style.display = 'block'; // Show the message
+
+            // Optionally change the color based on the type
+            if (type === 'error') {
+                messageElement.style.color = 'red';
+            } else if (type === 'success') {
+                messageElement.style.color = 'green';
+            }
+        }
+
+        // Check for URL parameters on page load
         const urlParams = new URLSearchParams(window.location.search);
         const logoutMessage = urlParams.get('logout'); // Check for the logout parameter
+        const loginErrorMessage = urlParams.get('login_error'); // Check for login error parameter
 
         if (logoutMessage) {
-            document.getElementById('logout-alert').style.display = 'block'; // Show the alert
-            document.getElementById('login-alert').style.display = 'None'; // hide the alert
+            displayMessage('You have been logged out successfully.', 'success'); // Display logout message
+            document.getElementById('login-alert').style.display = 'none'; // Hide the login alert
+        } else if (loginErrorMessage) {
+            displayMessage('Invalid credentials. Please try again.', 'error'); // Display login error message
+            document.getElementById('logout-alert').style.display = 'none'; // Hide the logout alert
         }
+
+
     </script>
 </body>
 </html>

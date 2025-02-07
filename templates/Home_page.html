@@ -7,281 +7,19 @@
     <title>{{ title }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/certe_style.css' %}" rel="stylesheet">
     <style>
-        body {
-            background: linear-gradient(135deg, #6a85b6, #bac8e0);
-            color: #333;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .curved-section {
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        .header, .footer {
-            background-color: white;
-        }
-        .main-content {
-            background-color: white;
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: row;
-            overflow-y: auto;
-        }
-        h1 {
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #7c83db, #a9a4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        h2 {
-            font-weight: bold;
-            color: #6a85b6;
-            margin: 0;
-            font-size: large;
-            margin-bottom:15px;
-        }
-        h4 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        .h5 {
-            color:white;
-        }
-        .form-control {
-            background-color: #6a85b6;
-            color: white;
-        }
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        .card {
-            background-color: #ffffff;
-            border: 2px solid #6a85b6;
-            border-radius: 12px;
-            padding: 10px;
-            margin: 10px;
-            flex: 1;
-            width: 200px;
-            height: 100px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .card:hover {
-            transform: scale(1.05);
-        }
-        th {
-            background-color: #6a85b6;
-            color: white;
-            text-align: center;
-            font-size: 1rem;
-        }
-        th, td {
-            border: 1px solid #6a85b6;
-            padding: 5px;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-        .table-container {
-            max-width: 100%;
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-        .main {
-            padding: 40px;
-            text-align: center;
-            flex: 1;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 0 20px 20px 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
-        .hidden {
-            display: none;
-        }
-        .cards-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-        .left-card, .right-card {
-            background-color: #e0e0e0;
-            padding: 20px;
-            margin: 10px;
-            flex: 1;
-            text-align: center;
-            border: 1px solid #aaa;
-            border-radius: 15px;
-            max-height: 400px;
-        }
-        .gap {
-            margin-top: 15px;
-        }
-        .info {
-            padding: 20px;
-            border: 1px solid #ccc;
-            height: 200px;
-            overflow-y: auto;
-        }
-        select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        .info-section {
-<!--            width: 70%;-->
-<!--            padding-left: 20px;-->
-<!--            border-left: 1px solid #ccc;-->
-                width: 100%;
-                height: 100%; /* Fill the parent container */
-                padding: 20px;
-                overflow-y: auto;
-                background-color: rgba(255, 255, 255, 0.9);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .dropdown-section {
-            width: 30%;
-            padding-right: 20px;
-        }
-        .sidebar {
-            width: 20%;
-            background-color: #f4f4f4;
-            padding: 20px;
-            height: 100vh;
-        }
-        .sidebar h2 {
-            text-align: center;
-        }
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #e0e0e0;
-            cursor: pointer;
-        }
-        .sidebar ul li:hover {
-            background-color: #ccc;
-        }
-        .row {
-            margin-bottom: 10px;
-        }
-        .table-container {
-            margin-top: 0; /* Remove or reduce top margin */
-        }
-        .card-header {
-            background-color: #4a6fa5;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        .p{
-            color:black;
-        }
-        .steps-card {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .card-header h1 {
-            font-size: 2.0rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            color: white;
-        }
-        .step-link {
-            color: #1976d2;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: #fff;
-            font-weight: 500;
-            margin-right: 15px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .step-link:hover {
-            background-color: #007bff;
-            color: white;
-        }
-        .p-2:hover{
-            color: blue;
-        }
-        .steps-content {
-            max-width: 650px;
-            margin: 0 auto;
-            color:white;
-        }
-        .section {
-            padding: 50px;
-            border: 1px solid #ccc;
-            margin: 20px 0;
-            background-color: white;
-            border-radius: 15px;
-        }
-
-        .steps-content {
-            display: none; /* Initially hide all sections */
-        }
-
-        h3 {
-            font-size:20px;
-            color:  #7c83db;
-        }
-
-        /* Show the first section by default */
-        .steps-content:first-of-type {
-            display: block;
-        }
-        .metrics-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .metrics-section {
-            width: 48%;
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .metrics-section h3 {
-            margin-top: 0;
-        }
-        .metrics-section table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .metrics-section th, .metrics-section td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
     </style>
 </head>
 <body>
     <header class="d-flex justify-content-between align-items-center p-3 curved-section header">
-        <img src="{% static 'logo.png' %}" alt="Logo" class="logo" style="width: 150px;" onclick="showCerteHome();">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 50px; height: 50px;" onclick="showCerteHome();">
         <div class="d-flex align-items-center">
-            Welcome, Amrita
+            Welcome, {% if received_username %}
+            {{ received_username }}
+            {% else %}
+            Guest
+            {% endif %}
             <i class="fas fa-user mx-2" title="Profile"></i>
             <i class="fas fa-bell mx-2" title="Notifications"></i>
             <a href="/logout" class="text-dark text-decoration-none">Logout</a>
@@ -291,12 +29,11 @@
     <main class="container-fluid curved-section mb-3 main-content">
         <nav class="col-md-2 bg-light sidebar p-3">
             <ul class="list-unstyled">
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('dashboard')" style="font-size: 15px;">&#9201; Dashboard</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('exam-preparation')" style="font-size: 15px;">&#128209; Exam Preparation</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('leadership')" style="font-size: 15px;">&#127942; Leadership</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('metrics')"  style="font-size: 15px;">&#128200; Metrics</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('Vouchers')" style="font-size: 15px;">&#127915; Vouchers</a></li>
-                <li class="py-2"><a href="#" class="text-decoration-none" data-url="/chat" style="font-size: 15px;">&#128172; Chat</a></li>
+                <li class="py-2"><a href="#dashboard" class="text-decoration-none" onclick="return handleClick('dashboard');" style="font-size: 15px;">&#9201; Dashboard</a></li>
+                <li class="py-2"><a href="#enrollment" class="text-decoration-none" onclick="return handleClick('enrollment');" style="font-size: 15px;">&#128209; Enrollment</a></li>
+                <li class="py-2"><a href="#leadership" class="text-decoration-none" onclick="return handleClick('leadership');" style="font-size: 15px;">&#127942; Leadership</a></li>
+                <li class="py-2"><a href="#Vouchers" class="text-decoration-none" onclick="return handleClick('Vouchers');" style="font-size: 15px;">&#127915; Vouchers</a></li>
+                <li class="py-2"><a href="#upload-certificate" class="text-decoration-none" onclick="return handleClick('upload-certificate');" style="font-size: 15px;">&#127971; Upload Certificate</a></li>
             </ul>
         </nav>
 
@@ -305,28 +42,16 @@
                 <h1>My Certification Dashboard</h1>
                 <div class="main">
                     <div class="row mt-3">
-                        <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="col-md-6 col-sm-6 mb-4">
                             <div class="card">
                                 <h2>Certifications Completed</h2>
-                                <p><b>1</b></p>
+                                <p><b id="completioncount"></b></p>
                             </div>
                         </div>
-                        <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="col-md-6 col-sm-6 mb-4">
                             <div class="card">
                                 <h2>Vouchers Received</h2>
-                                <p><b>1</b></p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6 mb-4">
-                            <div class="card">
-                                <h2>Average Completion Time</h2>
-                                <p><b>3 Months</b></p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6 mb-4">
-                            <div class="card">
-                                <h2>Current Level</h2>
-                                <p><b>Spacetrooper</b></p>
+                                <p><b id="vouchercount"></b></p>
                             </div>
                         </div>
                     </div>
@@ -338,42 +63,53 @@
                                     <th>Certification Name</th>
                                     <th>Completed Internal Assessment Test</th>
                                     <th>Received Voucher</th>
-                                    <th>Taken Exam</th>
+                                    <th>Exam Taken</th>
                                     <th>Uploaded Certificate</th>
                                     <th>Completed</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Microsoft DP-900</td>
-                                    <td>✔️</td>
-                                    <td>✔️</td>
-                                    <td>✔️</td>
-                                    <td>✔️</td>
-                                    <td>✔️</td>
-                                </tr>
-                                <tr>
-                                    <td>Microsoft AZ-900</td>
-                                    <td>✔️</td>
-                                    <td>✔️</td>
-                                    <td>❌</td>
-                                    <td>❌</td>
-                                    <td>❌</td>
-                                </tr>
-                                <tr>
-                                    <td>Microsoft AI-900</td>
-                                    <td>✔️</td>
-                                    <td>❌</td>
-                                    <td>❌</td>
-                                    <td>❌</td>
-                                    <td>❌</td>
-                                </tr>
+                            <tbody id="userdashboardtbody">
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+            <div id="enrollment" class="main-section hidden">
+                <h1>Certificate Registration Details</h1>
+                <div class="cards-container">
+                    <div class="left-card">
+                        <h2>Enrolled Certification</h2>
+                        <div class="gap"></div>
+                        <div style="height: 300px;overflow-y: auto;">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enrollTableBody">
 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="right-card">
+                        <h2>Register for Certification</h2>
+                        <div class="gap"></div>
+                        <form id="certificationForm" method="post" action="{% url 'save_enrollment' %}">
+                             {% csrf_token %}
+                             <select id="provider" name="provider" onchange="loadNames()">
+                                <option value="">---</option>
+                             </select>
+                             <select id="name" name="name">
+                                <option value="">---</option>
+                             </select>
+                             <button type="submit">Submit</button>
+                         </form>
+                    </div>
+                </div>
+            </div>
             <div id="home-content" class="main-section">
                     <h1>Empowering Your Growth at LTIMindtree</h1>
                          <p>The Certe Certification Portal is designed to help you advance your career at LTIMindtree's Data and Analytics Unit. Whether you're looking to improve your skills, complete mandatory certifications, or explore new areas of expertise, Certe offers a comprehensive, user-friendly platform for all your certification needs.</p>
@@ -397,78 +133,28 @@
                         <li>Leadership & Communication</li>
                     </ul>
                     <p>Each certification is designed to be engaging, informative, and rewarding. Upon completion, you will receive a voucher that you can redeem for various rewards as a recognition of your hard work and dedication.</p>
-                    <a href="#" class="cta" onclick="showExamPreparation(); return false;">Explore Certifications</a>
+                    <a href="#" class="cta" onclick="showEnrollment(); return false;">Explore Certifications</a>
 
                     <h2>Ready to Begin Your Journey?</h2>
                     <p>Join thousands of employees who are enhancing their skills and gaining new credentials with Certe. Our easy-to-use platform makes the process smooth and hassle-free.</p>
                     <p>Don’t wait—start your journey today by signing in and taking the first step towards unlocking new opportunities.</p>
 
             </div>
-
-            <div id="exam-preparation" class="main-section hidden">
-                <h1>Exam Preparation</h1>
-                <div class="d-flex">
-                    <div class="dropdown-section" style="flex: 1; padding-right: 20px;">
-                        <h2>Certifications List</h2>
-                        <label for="dropdown1">Select a Platform:</label>
-                        <select id="dropdown1" onchange="updateDropdown()" class="form-control mb-3">
-                            <option value="">--Select--</option>
-                            <option value="AWS">AWS</option>
-                            <option value="AZURE">AZURE</option>
-                            <option value="GCP">GCP</option>
-                            <option value="POWERBI">POWERBI</option>
-                            <option value="INFORMATICA">INFORMATICA</option>
-                        </select>
-
-                        <label for="dropdown2">Select a Role:</label>
-                        <select id="dropdown2" onchange="showCertificateInfo()" class="form-control mb-3">
-                            <option value="">--Select a platform first--</option>
-                        </select>
-                    </div>
-
-                    <div class="info-section" style="flex: 2;">
-                        <h2>Certification Details</h2>
-                        <div class="right-card" id="infoBox" style="overflow-y: auto; padding: 20px;">
-                            <p>Select options from the dropdown menus to display the information here.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div id="leadership" class="main-section hidden">
-                <h1>Associates Certified in Q3, 2024</h1>
+                <h1 id="leadershiph1"> </h1>
                 <div class="cards-container">
                     <div class="left-card">
                         <h2>Overall Certification Champions</h2>
                         <div class="gap"></div>
-                        <table class="table table-bordered">
+                            <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Image</th>
                                     <th>Name</th>
                                     <th>Certifications</th>
                                     <th>Rank</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 1" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Aria</td>
-                                    <td>10</td>
-                                    <td><i class="fas fa-medal medal" style="color: gold;"></i></td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Gracy</td>
-                                    <td>9</td>
-                                    <td><i class="fas fa-medal medal" style="color: silver;"></i></td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 3" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Sara</td>
-                                    <td>8</td>
-                                    <td><i class="fas fa-medal medal" style="color: bronze;"></i></td>
-                                </tr>
+                            <tbody id="champTableBody">
                             </tbody>
                         </table>
                     </div>
@@ -476,163 +162,101 @@
                         <h2>Certified Associates by Provider</h2>
                         <div class="gap"></div>
                         <select id="companyDropdown" class="form-control mb-3">
-                            <option value="amazon">Amazon</option>
-                            <option value="microsoft">Microsoft</option>
-                            <option value="google">Google</option>
-                            <option value="databricks">Databricks</option>
-                            <option value="informatica">Informatica</option>
-                            <option value="denodo">Denodo</option>
-                            <option value="snowflake">Snowflake</option>
-                            <option value="microstrategy">MicroStrategy</option>
-                            <option value="ibm">IBM</option>
+                            <option value="">---</option>
                         </select>
                         <table class="provider-table table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Photo</th>
                                     <th>Name</th>
-                                    <th>Level</th>
                                 </tr>
                             </thead>
                             <tbody id="providerTableBody">
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Tom</td>
-                                    <td>Developer</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Christina</td>
-                                    <td>Architect</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{% static 'Users.png' %}" alt="Champion 2" style="width: 40px; height: 40px; border-radius: 50%;"></td>
-                                    <td>Gracy</td>
-                                    <td>Professional</td>
-                                </tr>
+
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-
-            <div id="metrics" class="main-section hidden">
-                <h1>Organizational Certification Metrics</h1>
-                <div class="metrics-container">
-                        <div class="metrics-section">
-                            <h3>Overall Metrics</h3>
-                            <table>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Value</th>
-                                    <th>Progress</th>
-                                </tr>
-                                <tr>
-                                    <td>Total Vouchers Distributed</td>
-                                    <td>500</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Voucher Utilization Rate</td>
-                                    <td>75%</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Certification Completion Rate</td>
-                                    <td>65%</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Engagement Over Time</td>
-                                    <td>Increasing</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Certification Success Rate</td>
-                                    <td>85%</td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    <div class="metrics-section">
-                        <h3>Individual-Level Metrics</h3>
-                        <table>
-                            <tr>
-                                <th>Metric</th>
-                                <th>Value</th>
-                                <th>Progress</th>
-                            </tr>
-                            <tr>
-                                <td>Vouchers Received vs. Utilized</td>
-                                <td>60%</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>Certifications Completed</td>
-                                <td>120</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>Time Taken to Complete Certifications</td>
-                                <td>Average 3 months</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>Certification Goals Achieved</td>
-                                <td>80%</td>
-                                <td></td>
-                            </tr>
-                        </table>
-                    </div>
-            </div>
-                </div>
-
-            <div id="Vouchers" class="main-section hidden">
-                <div class="main">
-                    <div class="steps-card">
-                        <div class="card-header">
-                            <h1 class="h5" id="cert"></h1>
-<!--                            <h1 class="h5">Request a Voucher for DP-900</h1>-->
-                            <div class="step-navigation d-flex flex-wrap justify-content-center">
-                                <div class="p-2">
-                                    <a href="#training" class="step-link" onclick="showstepscontent('training')">📘 Training</a>
+            <div id="upload-certificate" class="main-section hidden">
+                <h1>Upload Your Certificate</h1>
+                <div class="certificate-container">
+                    <form id="certsubmit" method="post" action="{% url 'certificate_upload' %}" >
+                    {% csrf_token %}
+                        <select id="provider1" name="provider" onchange="loadNamesCertUpload()">
+                        <option value="">---</option>
+                        </select>
+                        <select id="name1" name="name" onchange="showExamStatus()">
+                        <option value="">---</option>
+                        </select>
+                        <div id="examStatus" style="display: none;">
+                            <div class="radio-group" style="display: flex; gap: 20px;">
+                                <p>Exam status</p>
+                                <div>
+                                    <input type="radio" id="pass" name="exam_result" value="pass" onchange="handlePassOption();showRequestIdOptions()">
+                                    <label for="pass">Cleared</label>
                                 </div>
-                                <div class="p-2">
-                                    <a href="#submitScore" class="step-link" onclick="showstepscontent('submitScore')">📝 Submit Score</a>
-                                </div>
-                                <div class="p-2">
-                                    <a href="#voucher" class="step-link" onclick="showstepscontent2('voucher')">🎟️ Voucher</a>
+                                <div>
+                                    <input type="radio" id="fail" name="exam_result" value="fail" onchange="handleFailOption();hideRequestIdOptions();toggleSubmitButton()">
+                                    <label for="fail">Not Cleared</label>
                                 </div>
                             </div>
-                            <div class="steps-content">
-                                <!-- Step 1: Training -->
-                                <section id="training" class="step-content section">
-                                    <h2>Step 1: Complete Mandatory Training</h2>
-                                    <ul>
-                                        <li><a href="#" style="color:black">Udemy: Azure Data Fundamentals</a></li>
-                                        <li><a href="#" style="color:black">Soshin School: Azure Basics</a></li>
-                                        <li><a href="#" style="color:black">YouTube: Azure DP-900 Crash Course</a></li>
-                                        <li><a href="#" style="color:black">Coursera: Intro to Azure Data Services</a></li>
-                                    </ul>
-                                    <a href="#submitScore" class="next-step" onclick="showstepscontent('submitScore')">Next Step: Submit Score ➔</a>
-                                </section>
+                        </div>
+                        <div id="requestIdOptions" style="display: none;">
+                            <div class="radio-group" style="display: flex; gap: 20px;">
+                                <p>Request ID:</p>
+                                <div>
+                                    <input type="radio" id="requestIdYes" name="request_id" value="yes" onchange="handleRequestIdChange(true)">
+                                    <label for="requestIdYes">Yes</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="requestIdNo" name="request_id" value="no" onchange="handleRequestIdChange(false)">
+                                    <label for="requestIdNo">No</label>
+                                </div>
+                            </div>
 
-                                <!-- Step 2: Submit Score -->
-                                <section id="submitScore" class="step-content section">
-                                    <h2>Step 2: Submit Internal Assessment Score</h2>
-                                    <label for="score" style="color:black">Enter Score (out of 100):</label>
-                                    <input type="number" id="score" name="score" placeholder="Enter score" min="0" max="100" onkeyup="checkscore()">
-                                    <p style="color:black">To proceed, your score must be above 80%.</p>
-                                    <a href="#voucher" class="next-step" onclick="showstepscontent2('voucher')">Next Step: Voucher ➔</a>
-                                </section>
+                            <div id="requestIdInput" style="display: none;">
+                                <input type="text" id="requestIdValue" name="request_id_value" placeholder="Enter Request ID">
+                            </div>
 
-                                <!-- Step 3: Voucher -->
-                                <section id="voucher" class="step-content section">
-                                    <h2>Step 3: Voucher Details</h2>
-                                    <p class="p"><strong>Voucher Code:</strong> DP900-FAKE-2024</p>
-                                    <p class="p"><strong>Expiry Date:</strong> 31-Dec-2024</p>
-                                    <p class="p"><strong>Steps to Redeem:</strong> Go to the Microsoft certification portal, enter the voucher code during checkout.</p>
-                                </section>
+                            <div id="hardcodedLink" style="display: none;">
+                                <a href="https://shoshin.ltimindtree.com/certificateUpload" target="_blank">Click here to Upload certificate on Shoshin</a>
+                            </div>
+
+                            <div id="uploadStatus" style="display: none;">
+                                <input type="checkbox" id="uploadConfirm" name="upload_confirmed" onchange="toggleSubmitButton()">
+                                <label for="uploadConfirm">I confirm the certificate has been uploaded</label>
+                            </div>
+                        </div>
+                        <button type="submit" id="submitButton" disabled class="disabled-button" >Submit</button>
+                    </form>
+                </div>
+            </div>
+            <div id="Vouchers" class="main-section hidden">
+                <div class="cards-container">
+                    <div class="right-card">
+                        <h2>Registered Certificate</h2>
+                        <div class="gap"></div>
+                        <select id="registered_cert_dropdown">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                    <div class="left-card">
+                        <h2>Enrolled Certification</h2>
+                        <div class="gap"></div>
+                        <h1 class="h5" id="cert"></h1>
+                        <div class="step-navigation d-flex flex-column align-items-center">
+                                <span id="statusmessage" style="color:red"></span>
+                                <button type="submit" id="requestwcptestbtn" disabled class="disabled-button"> Request WCP Test</button>
+                                <button type="submit" id="wcpcompletedbtn" disabled class="disabled-button"> WCP Completed</button>
+<!--                                <button type="submit" id="voucherreceivedbtn" disabled class="disabled-button"> Voucher Received</button>-->
+                                <button type="submit" id="exambookedbtn" disabled class="disabled-button"> Certification Exam Booked</button>
+                                <button type="submit" id="examdatebtn" disabled class="disabled-button" onclick="showDateDiv()"> Update Exam Schedule Date</button>
+                            <div id="dateDiv" style="display:none;">
+                                <form>
+                                    <label for="date">Exam Date:</label>
+                                    <input type="date" id="date" name="date"><br><br>
+                                    <input id="dateSubmitBtn" type="submit" value="submit">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -645,738 +269,9 @@
         © 2024 LTIMindtree
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-<script>
-
-    function showSection(section) {
-        document.querySelectorAll('.main-section').forEach(s => {
-            s.classList.add('hidden');
-        });
-        document.getElementById(section).classList.remove('hidden');
-        document.getElementById('home-content').style.display = 'none';
-    }
-
-    function showExamPreparation() {
-                // Hide all main sections
-                document.querySelectorAll('.main-section').forEach(s => {
-                    s.classList.add('hidden'); // Hide all sections
-                });
-                // Show the exam preparation section
-                document.getElementById('exam-preparation').classList.remove('hidden'); // Make exam preparation visible
-                // Hide home content when navigating to exam preparation
-                document.getElementById('home-content').style.display = 'none'; // Hide home content
-            }
-            function showCerteHome() {
-            const sections = document.querySelectorAll('.main-section');
-            sections.forEach(section => {
-                section.classList.add('hidden');
-            });
-            // Show the home content section
-            const homeContent = document.getElementById('home-content');
-            if (homeContent) {
-                homeContent.classList.remove('hidden');
-                homeContent.style.display = 'block'; // Ensure it's displayed
-                homeContent.style.height = 'calc(100vh - 100px)';
-            }
-        }
-
-    function showstepscontent(stepscontent){
-             document.querySelector('.steps-content').style.display="block";
-            const sections = document.querySelectorAll('.step-content');
-            if(stepscontent == 'submitScore'){
-                sections.forEach(section => {
-                    if (section.id === 'submitScore') {
-                        section.style.display = "block";
-                    }
-                    else{
-                        section.style.display = "none";
-                    }
-                });
-            }else if(stepscontent == 'training'){
-                sections.forEach(section => {
-                    if (section.id === 'training') {
-                        section.style.display = "block";
-                    }
-                    else{
-                        section.style.display = "none";
-                    }
-                });
-            }else if(stepscontent == 'voucher'){
-                sections.forEach(section => {
-                    if (section.id === 'voucher') {
-                        section.style.display = "block";
-                    }
-                    else{
-                        section.style.display = "none";
-                    }
-                });
-            }
-        }
-        function showstepscontent2(stepscontent){
-            debugger
-             document.querySelector('.steps-content').style.display="block";
-            const sections = document.querySelectorAll('.step-content');
-            var value = document.getElementById("score").value;
-            console.log('value',value);
-            if(stepscontent == 'voucher' && value != ""){
-                sections.forEach(section => {
-                    if (section.id === 'voucher') {
-                        section.style.display = "block";
-                    }
-                    else{
-                        section.style.display = "none";
-                    }
-                });
-            }else{
-                alert("Please enter score")
-            }
-        }
-        function checkscore(){
-            debugger
-            var value = document.getElementById("score").value;
-            if(value.length < 2){
-                return;
-            }
-            value=parseInt(value,10);
-            if(isNaN(value)){
-                alert("Invalid input. Please enter a validscore.");
-                document.getElementById("score").value=null;
-                return;
-            }
-            // console.log('Enter Score',value);
-            if(value > 100 ){
-                alert("Invalid score Detected! The score you entered exceeds the maximum possible value of 100.")
-                document.getElementById("score").value=null;
-            }else if (value>=80 && value<=100){
-                console.log("Valid Score:",value)
-            }else if(value<80){
-                alert("Thank you for completing the Assesment! Unfortunately,Your score did not match the 80% threshold required to receive the certification voucher")
-                document.getElementById("score").value=null;
-            }else{
-                alert("Invalid input. Please enter a valid score.")
-                document.getElementById("score").value=null;
-            }
-        }
-
-
-
-
-        function showMetrics() {
-        const sections = document.querySelectorAll('.main-section');
-        sections.forEach(section => {
-            section.classList.add('hidden'); // Hide all sections
-        });
-        // Show only the metrics section
-        document.getElementById('metrics').classList.remove('hidden'); // Ensure the metrics section is visible
-        document.getElementById('home-content').style.display = 'none'; // Hide home content
-        document.getElementById('exam-preparation').style.display = 'none'; // Hide exam preparation
-        document.getElementById('leadership').style.display = 'none'; // Hide leadership if needed
-        document.getElementById('Vouchers').style.display = 'none';
-}
-
-
-    function updateDropdown() {
-        const dropdown1 = document.getElementById("dropdown1");
-        const dropdown2 = document.getElementById("dropdown2");
-        const selectedValue = dropdown1.value;
-
-        // Clear existing options in dropdown2
-        dropdown2.innerHTML = "";
-
-        // Define options based on the selected value
-        let options = [];
-        if (selectedValue === "AWS") {
-            options = [
-                "AWS Certified Solutions Architect",
-                "AWS Certified Developer",
-                "AWS Certified SysOps Administrator",
-                "AWS Certified DevOps Engineer",
-                "AWS Certified Security - Specialty",
-                "AWS Certified Advanced Networking - Specialty",
-                "AWS Certified Machine Learning - Specialty",
-                "AWS Certified Database - Specialty",
-                "AWS Certified Data Analytics - Specialty"
-            ];
-        } else if (selectedValue === "AZURE") {
-            options = [
-                "AZ-900: Azure Fundamentals",
-                "AZ-104: Azure Administrator",
-                "AZ-204: Azure Developer",
-                "AZ-303: Azure Solutions Architect - Technologies",
-                "AZ-304: Azure Solutions Architect - Design",
-                "AZ-400: Azure DevOps Engineer",
-                "DP-900: Azure Data Fundamentals"
-            ];
-        } else if (selectedValue === "GCP") {
-            options = [
-                "Google Cloud Associate",
-                "Google Cloud Professional Cloud Architect",
-                "Google Cloud Professional Data Engineer",
-                "Google Cloud Professional Cloud Developer",
-                "Google Cloud Professional Cloud Network Engineer",
-                "Google Cloud Professional Cloud Security Engineer"
-            ];
-        } else if (selectedValue === "POWERBI") {
-            options = [
-                "DA-100: Analyzing Data with Microsoft Power BI",
-                "PL-300: Microsoft Power BI Data Analyst"
-            ];
-        } else if (selectedValue === "INFORMATICA") {
-            options = [
-                "Informatica Data Integration 10.x Developer",
-                "Informatica Data Quality 10.x Developer",
-                "Informatica PowerCenter Data Integration 10.x",
-                "Informatica Cloud Data Integration"
-            ];
-    }
-
-        // Populate dropdown2 with new options
-        options.forEach(option => {
-            const opt = document.createElement("option");
-            opt.value = option;
-            opt.textContent = option;
-            dropdown2.appendChild(opt);
-        });
-
-        // Reset info box
-        document.getElementById("infoBox").innerHTML = "<p>Select options from the dropdown menus to display the information here.</p>";
-    }
-
-    function showCertificateInfo() {
-        const dropdown2 = document.getElementById("dropdown2");
-        const selectedRole = dropdown2.value;
-        const infoBox = document.getElementById("infoBox");
-        document.getElementById("cert").innerHTML="Request a Voucher for "+selectedRole;
-
-        const certificationInfo = {
-            "AWS Certified Solutions Architect": `
-                <h3>AWS Certified Solutions Architect</h3>
-                <p>This certification focuses on designing distributed systems on AWS. It validates your ability to architect and deploy secure applications on AWS technologies.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 130 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/aws-certified-solutions-architect-associate-saa-c03/?couponCode=LEARNNOWPLANS" target="_blank">AWS Certified Solutions Architect</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=5gnoVjpfWxU" target="_blank">AWS Certified Solutions Architect</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20Solutions%20Architect" target="_blank">AWS Certified Solutions Architect Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Design Secure Architecture (30%)</p>
-                <p> &#129504; Design Resilient Architecture (26%)</p>
-                <p> &#129504; Design High-performing Architecture (24%)</p>
-                <p> &#129504; Design Cost-Optimized Architecture (20%)</p>
-            `,
-            "AWS Certified Developer": `
-                <h3>AWS Certified Developer</h3>
-                <p>This certification validates your ability to develop, deploy, and troubleshoot cloud-based applications on AWS.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 130 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/aws-certified-developer-associate-dva-c01/" target="_blank">AWS Certified Developer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=RrKRN9zRBWs">AWS Certified Developer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20Developer" target="_blank">AWS Certified Developer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Development with AWS Services (32%)</p>
-                <p> &#129504; Security (26%)</p>
-                <p> &#129504; Deployment (24%)</p>
-                <p> &#129504; Troubleshooting and Optimization (18%)</p>
-            `,
-            "AWS Certified SysOps Administrator": `
-                <h3>AWS Certified SysOps Administrator</h3>
-                <p>This certification validates your expertise in operating and managing AWS environments.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 130 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/ultimate-aws-certified-sysops-administrator-associate/?couponCode=LEARNNOWPLANS" target="_blank">AWS Certified SysOps Administrator</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=KX_AfyrhlgQ">AWS Certified SysOps Administrator</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20SysOps%20Administrator" target="_blank">AWS Certified SysOps Administrator Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Monitoring, Reporting, and Automation (30%)</p>
-                <p> &#129504; High Availability, Backup, and Recovery (26%)</p>
-                <p> &#129504; Deployment, Provisioning, and Automation (24%)</p>
-                <p> &#129504; Security and Compliance (20%)</p>
-            `,
-            "AWS Certified DevOps Engineer": `
-                <h3>AWS Certified DevOps Engineer</h3>
-                <p>This certification validates your skills in implementing and managing continuous delivery systems and methodologies on AWS.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 75 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 180 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/aws-certified-devops-engineer-professional-hands-on/?couponCode=LEARNNOWPLANS" target="_blank">AWS Certified DevOps Engineer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=LC-KPdkVZ4I&list=PL9ooVrP1hQOE5SXbik4_EVVjpx9qG3CBb">AWS Certified DevOps Engineer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20DevOps%20Engineer" target="_blank">AWS Certified DevOps Engineer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Continuous Delivery and Automation (30%)</p>
-                <p> &#129504; Monitoring and Logging (24%)</p>
-                <p> &#129504; Security, Compliance, and Governance (26%)</p>
-                <p> &#129504; Incident and Event Response (20%)</p>
-            `,
-            "AWS Certified Security - Specialty": `
-                <h3>AWS Certified Security - Specialty</h3>
-                <p>This certification validates your knowledge of securing data and applications in the AWS environment.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 170 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/ultimate-aws-certified-security-specialty/" target="_blank">AWS Certified Security - Specialty</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=9CoMa2D7LwI">AWS Certified Security - Specialty</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20Security%20-%20Specialty" target="_blank">AWS Certified Security - Specialty Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Data Protection and Privacy (26%)</p>
-                <p> &#129504; Identity and Access Management (24%)</p>
-                <p> &#129504; Infrastructure Security (24%)</p>
-                <p> &#129504; Incident Response (26%)</p>
-            `,
-            "AWS Certified Advanced Networking - Specialty": `
-                <h3>AWS Certified Advanced Networking - Specialty</h3>
-                <p>This certification validates your ability to design and implement AWS and hybrid IT network architectures at scale.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 170 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/aws-certified-advanced-networking-specialty-ans/?couponCode=LEARNNOWPLANS" target="_blank">AWS Certified Advanced Networking - Specialty</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=7z9wN6QygfE">AWS Certified Advanced Networking - Specialty</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20Advanced%20Networking%20-%20Specialty" target="_blank">AWS Certified Advanced Networking - Specialty Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Network Design (30%)</p>
-                <p> &#129504; Network Implementation (26%)</p>
-                <p> &#129504; Network Management and Optimization (24%)</p>
-                <p> &#129504; Security and Compliance (20%)</p>
-            `,
-            "AWS Certified Machine Learning - Specialty": `
-                <h3>AWS Certified Machine Learning - Specialty</h3>
-                <p>This certification validates your ability to build, train, tune, and deploy machine learning models on AWS.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 180 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/aws-machine-learning/?couponCode=LEARNNOWPLANS" target="_blank">AWS Certified Machine Learning - Specialty</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=WoQ3UcEsvTw&list=PLEF5xKHm-3ZNDvdJpMCLu9xa1oDNvAmMr">AWS Certified Machine Learning - Specialty</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20Machine%20Learning%20-%20Specialty" target="_blank">AWS Certified Machine Learning - Specialty Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Data Engineering (20%)</p>
-                <p> &#129504; Exploratory Data Analysis (24%)</p>
-                <p> &#129504; Modeling (36%)</p>
-                <p> &#129504; Machine Learning Implementation and Operations (20%)</p>
-            `,
-            "AWS Certified Database - Specialty": `
-                <h3>AWS Certified Database - Specialty</h3>
-                <p>This certification validates your expertise in recommending, designing, and maintaining AWS database solutions.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 180 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/total-aws-certified-database-specialty-exam-prep-dbs-c01/?couponCode=LEARNNOWPLANS" target="_blank">AWS Certified Database - Specialty</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=n8v4vaTEI3c">AWS Certified Database - Specialty</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20Database%20-%20Specialty" target="_blank">AWS Certified Database - Specialty Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Database Design (30%)</p>
-                <p> &#129504; Deployment and Migration (26%)</p>
-                <p> &#129504; Management and Operations (24%)</p>
-                <p> &#129504; Monitoring and Troubleshooting (20%)</p>
-            `,
-            "AWS Certified Data Analytics - Specialty": `
-                <h3>AWS Certified Data Analytics - Specialty</h3>
-                <p>This certification validates your ability to design and implement AWS services to derive value from data.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 65 questions (multiple choice/multiple responses)</p>
-                <p><strong>Duration:</strong> 170 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/aws-certified-data-analytics-specialty-das-training/?couponCode=LEARNNOWPLANS" target="_blank">AWS Certified Data Analytics - Specialty</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=pN5ScV078os&list=PL-oeM7CaGtVhwjl2-M65b3CYQzF2SmVG_&index=1">AWS Certified Data Analytics - Specialty</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AWS%20Certified%20Data%20Analytics%20-%20Specialty" target="_blank">AWS Certified Data Analytics - Specialty Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Collection (20%)</p>
-                <p> &#129504; Storage (20%)</p>
-                <p> &#129504; Processing (36%)</p>
-                <p> &#129504; Analysis and Visualization (24%)</p>
-            `,
-
-            "AZ-900: Azure Fundamentals": `
-                <h3>AZ-900: Azure Fundamentals</h3>
-                <p>This certification demonstrates foundational knowledge of cloud services and how those services are provided with Microsoft Azure.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 85 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/az900-azure/" target="_blank">AZ-900: Azure Fundamentals</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=NKEFWyqJ5XA">AZ-900: Azure Fundamentals</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AZ-900:%20Azure%20Fundamentals" target="_blank">AZ-900: Azure Fundamentals Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Cloud Concepts (15-20%)</p>
-                <p> &#129504; Core Azure Services (30-35%)</p>
-                <p> &#129504; Security, Compliance, and Trust (25-30%)</p>
-                <p> &#129504; Azure Pricing, SLA, and Lifecycle (20-25%)</p>
-            `,
-            "AZ-104: Azure Administrator": `
-                <h3>AZ-104: Azure Administrator</h3>
-                <p>This certification validates your skills in managing Azure subscriptions, securing identities, administering the infrastructure, and configuring virtual networks.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 150 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/microsoft-certified-azure-administrator/" target="_blank">AZ-104: Azure Administrator</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=NKEFWyqJ5XA">AZ-104: Azure Administrator</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AZ-104:%20Azure%20Administrator" target="_blank">AZ-104: Azure Administrator Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Manage Azure identities and governance (15-20%)</p>
-                <p> &#129504; Implement and manage storage (10-15%)</p>
-                <p> &#129504; Deploy and manage Azure compute resources (25-30%)</p>
-                <p> &#129504; Configure and manage virtual networks (20-25%)</p>
-                <p> &#129504; Monitor and back up Azure resources (10-15%)</p>
-            `,
-            "AZ-204: Azure Developer": `
-                <h3>AZ-204: Azure Developer</h3>
-                <p>This certification validates your skills in developing apps and services by using Azure tools and technologies.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 150 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/70532-azure/" target="_blank">AZ-204: Azure Developer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=jZx8PMQjobk">AZ-204: Azure Developer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AZ-204:%20Azure%20Developer" target="_blank">AZ-204: Azure Developer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Develop for the cloud (20-25%)</p>
-                <p> &#129504; Develop Azure compute solutions (25-30%)</p>
-                <p> &#129504; Implement Azure security (20-25%)</p>
-                <p> &#129504; Monitor, troubleshoot, and optimize Azure solutions (10-15%)</p>
-                <p> &#129504; Connect to and consume Azure services and third-party services (15-20%)</p>
-            `,
-            "AZ-303: Azure Solutions Architect - Technologies": `
-                <h3>AZ-303: Azure Solutions Architect - Technologies</h3>
-                <p>This certification validates your skills in implementing solutions that run on Azure, including aspects like compute, network, storage, and security.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 150 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/70534-azure/" target="_blank">AZ-303: Azure Solutions Architect - Technologies</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=i6NzKvGUsBs">AZ-303: Azure Solutions Architect - Technologies</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AZ-303:%20Azure%20Solutions%20Architect%20-%20Technologies" target="_blank">AZ-303: Azure Solutions Architect - Technologies Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Implementing and monitoring Azure infrastructure (50-55%)</p>
-                <p> &#129504; Implementing management and security solutions (25-30%)</p>
-                <p> &#129504; Implementing solutions for apps (20-25%)</p>
-            `,
-            "AZ-304: Azure Solutions Architect - Design": `
-                <h3>AZ-304: Azure Solutions Architect - Design</h3>
-                <p>This certification validates your skills in designing solutions that run on Azure.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 150 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/az301-azure/" target="_blank">AZ-304: Azure Solutions Architect - Design</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=MmqXJLIKU1o">AZ-304: Azure Solutions Architect - Design</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AZ-304:%20Azure%20Solutions%20Architect%20-%20Design" target="_blank">AZ-304: Azure Solutions Architect - Design Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Design Monitoring (10-15%)</p>
-                <p> &#129504; Design Identity and Security (25-30%)</p>
-                <p> &#129504; Design Data Storage (20-25%)</p>
-                <p> &#129504; Design Business Continuity (15-20%)</p>
-                <p> &#129504; Design Infrastructure (20-25%)</p>
-            `,
-            "AZ-400: Azure DevOps Engineer": `
-                <h3>AZ-400: Azure DevOps Engineer</h3>
-                <p>This certification validates your skills in combining people, processes, and technologies to continuously deliver valuable products and services that meet end-user needs.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 180 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/azure100/?couponCode=LEARNNOWPLANS" target="_blank">AZ-400: Azure DevOps Engineer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=11KT1hPNkY4">AZ-400: Azure DevOps Engineer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/AZ-400:%20Azure%20DevOps%20Engineer" target="_blank">AZ-400: Azure DevOps Engineer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; DevOps Strategy (15-20%)</p>
-                <p> &#129504; Implementing DevOps Development Processes (20-25%)</p>
-                <p> &#129504; Implementing Continuous Integration (20-25%)</p>
-                <p> &#129504; Implementing Continuous Delivery (15-20%)</p>
-                <p> &#129504; Implementing Dependency Management (10-15%)</p>
-                <p> &#129504; Implementing Application Infrastructure (15-20%)</p>
-                <p> &#129504; Implementing Continuous Feedback (10-15%)</p>
-            `,
-            "DP-900: Azure Data Fundamentals": `
-                <h3>DP-900: Azure Data Fundamentals</h3>
-                <p>This certification demonstrates foundational knowledge of core data concepts and how they are implemented using Microsoft Azure data services.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 85 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/dp900-azure/" target="_blank">DP-900: Azure Data Fundamentals</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=P3qmqUZJ7l0">DP-900: Azure Data Fundamentals</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/DP-900:%20Azure%20Data%20Fundamentals" target="_blank">DP-900: Azure Data Fundamentals Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Describe core data concepts (15-20%)</p>
-                <p> &#129504; Describe how to work with relational data on Azure (25-30%)</p>
-                <p> &#129504; Describe how to work with non-relational data on Azure (25-30%)</p>
-                <p> &#129504; Describe an analytics workload on Azure (20-25%)</p>
-            `,
-                            // GCP Certifications
-                            "Google Cloud Associate": `
-                <h3>Google Cloud Associate</h3>
-                <p>This certification validates foundational skills in Google Cloud technologies.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 50 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/google-cloud-certification-associate-cloud-engineer/?couponCode=LEARNNOWPLANS" target="_blank">Google Cloud Associate</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=jpno8FSqpc8">Google Cloud Associate</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Google%20Cloud%20Associate" target="_blank">Google Cloud Associate Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Understand core Google Cloud concepts (20%)</p>
-                <p> &#129504; Configure Google Cloud resources (30%)</p>
-                <p> &#129504; Manage Google Cloud operations (30%)</p>
-                <p> &#129504; Security and compliance (20%)</p>
-            `,
-            "Google Cloud Professional Cloud Architect": `
-                <h3>Google Cloud Professional Cloud Architect</h3>
-                <p>This certification assesses your ability to design and manage robust, secure, scalable, and dynamic solutions using Google Cloud technologies.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 50 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/google-cloud-professional-cloud-architect-certification/" target="_blank">Google Cloud Professional Cloud Architect</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=9vvS47MAFcA">Google Cloud Professional Cloud Architect</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Google%20Cloud%20Professional%20Cloud%20Architect" target="_blank">Google Cloud Professional Cloud Architect Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Designing and planning cloud solution architecture (30%)</p>
-                <p> &#129504; Managing and provisioning cloud solution infrastructure (20%)</p>
-                <p> &#129504; Designing for reliability and scalability (20%)</p>
-                <p> &#129504; Analyzing and optimizing technical and business processes (20%)</p>
-                <p> &#129504; Managing security and compliance (10%)</p>
-            `,
-            "Google Cloud Professional Data Engineer": `
-                <h3>Google Cloud Professional Data Engineer</h3>
-                <p>This certification validates your ability to design, build, operationalize, secure, and monitor data processing systems.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 50 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/google-cloud-gcp-professional-data-engineer-certification/?couponCode=LEARNNOWPLANS" target="_blank">Google Cloud Professional Data Engineer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=UKn3BfBRfMY&list=PLLrA_pU9-Gz1TbaEIlUVfAqZ853LmDPib">Google Cloud Professional Data Engineer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Google%20Cloud%20Professional%20Data%20Engineer" target="_blank">Google Cloud Professional Data Engineer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Designing data processing systems (20%)</p>
-                <p> &#129504; Building and operationalizing data processing systems (30%)</p>
-                <p> &#129504; Analyzing data (20%)</p>
-                <p> &#129504; Machine learning and data analysis (15%)</p>
-                <p> &#129504; Managing data security and compliance (15%)</p>
-            `,
-            "Google Cloud Professional Cloud Developer": `
-                <h3>Google Cloud Professional Cloud Developer</h3>
-                <p>This certification assesses your ability to build scalable and highly available applications using Google Cloud technologies.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 50 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/google-cloud-certified-professional-cloud-developer/?couponCode=LEARNNOWPLANS" target="_blank">Google Cloud Professional Cloud Developer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=nvlt0dA7rsQ&list=PLxQzKf1gjjCNRkGtIqou7kWI6I2t0n_Bv">Google Cloud Professional Cloud Developer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Google%20Cloud%20Professional%20Cloud%20Developer" target="_blank">Google Cloud Professional Cloud Developer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Designing and building cloud-native applications (30%)</p>
-                <p> &#129504; Managing application performance and reliability (25%)</p>
-                <p> &#129504; Integrating Google Cloud services (25%)</p>
-                <p> &#129504; Ensuring security and compliance (20%)</p>
-            `,
-            "Google Cloud Professional Cloud Network Engineer": `
-                <h3>Google Cloud Professional Cloud Network Engineer</h3>
-                <p>This certification validates your ability to implement and manage network architectures in Google Cloud.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 50 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/google-cloud-networking/" target="_blank">Google Cloud Professional Cloud Network Engineer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=TJDtB4-sCVQ&list=PL7j_lVoFvd3Vga5mkXJnk7BzxTARSkZPA">Google Cloud Professional Cloud Network Engineer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Google%20Cloud%20Professional%20Cloud%20Network%20Engineer" target="_blank">Google Cloud Professional Cloud Network Engineer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Designing, planning, and prototyping Google Cloud networks (30%)</p>
-                <p> &#129504; Implementing Google Cloud VPCs (30%)</p>
-                <p> &#129504; Configuring network services (20%)</p>
-                <p> &#129504; Managing network security (20%)</p>
-            `,
-            "Google Cloud Professional Cloud Security Engineer": `
-                <h3>Google Cloud Professional Cloud Security Engineer</h3>
-                <p>This certification assesses your ability to design and implement secure infrastructure on Google Cloud.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 50 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/google-cloud-gcp-professional-cloud-security-engineer-certification/?couponCode=LEARNNOWPLANS">Google Cloud Professional Cloud Security Engineer</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=Ijkvx1u0w6o">Google Cloud Professional Cloud Security Engineer</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Google%20Cloud%20Professional%20Cloud%20Security%20Engineer" target="_blank">Google Cloud Professional Cloud Security Engineer Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Configuring access and security (30%)</p>
-                <p> &#129504; Managing security operations (30%)</p>
-                <p> &#129504; Protecting data (20%)</p>
-                <p> &#129504; Managing compliance (20%)</p>
-            `,
-            // Power BI Certifications
-            "DA-100: Analyzing Data with Microsoft Power BI": `
-                <h3>DA-100: Analyzing Data with Microsoft Power BI</h3>
-                <p>This certification demonstrates your ability to help stakeholders make data-driven decisions using Power BI.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 180 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/pl-300-da-100-microsoft-power-bi-data-analyst-exam-prep/?couponCode=LEARNNOWPLANS">DA-100: Analyzing Data with Microsoft Power BI</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=Tfk3ae0qz3A">DA-100: Analyzing Data with Microsoft Power BI</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/DA-100:%20Analyzing%20Data%20with%20Microsoft%20Power%20BI" target="_blank">DA-100: Analyzing Data with Microsoft Power BI Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Prepare data (20-25%)</p>
-                <p> &#129504; Model data (25-30%)</p>
-                <p> &#129504; Visualize data (25-30%)</p>
-                <p> &#129504; Analyze data (10-15%)</p>
-                <p> &#129504; Deploy and maintain assets (10-15%)</p>
-            `,
-            "PL-300: Microsoft Power BI Data Analyst": `
-                <h3>PL-300: Microsoft Power BI Data Analyst</h3>
-                <p>This certification validates your skills in preparing, modeling, visualizing, and analyzing data with Power BI.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 40-60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 180 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/microsoft-power-bi-certification-da-100-exam-prep/?couponCode=LEARNNOWPLANS">PL-300: Microsoft Power BI Data Analyst</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=Ym3zj7fcUBs&list=PLp4MAoTwZIfcBPbzGrQlCbUZqIl36n8vy">PL-300: Microsoft Power BI Data Analyst</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/PL-300:%20Microsoft%20Power%20BI%20Data%20Analyst" target="_blank">PL-300: Microsoft Power BI Data Analyst Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Prepare data (15-20%)</p>
-                <p> &#129504; Model data (20-25%)</p>
-                <p> &#129504; Visualize data (25-30%)</p>
-                <p> &#129504; Analyze data (10-15%)</p>
-                <p> &#129504; Deploy and maintain Power BI reports (10-15%)</p>
-            `,
-                            // Informatica Certifications
-                "Informatica Data Integration 10.x Developer": `
-                <h3>Informatica Data Integration 10.x Developer</h3>
-                <p>This certification demonstrates your ability to design and implement data integration solutions using Informatica PowerCenter.</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/informatica-cloud-data-integration/?couponCode=LEARNNOWPLANS" target="_blank">Informatica Data Integration 10.x Developer Course</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=b2Ub-WZnfMA&list=PLDQNKHReEhj_6UMCcHyFWlfeHyyPiEnAu" target="_blank">Informatica Data Integration Overview</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Informatica%20Data%20integration" target="_blank">Informatica Data Integration Shoshin Course</a></p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Designing and developing data integration workflows (30%)</p>
-                <p> &#129504; Implementing data transformations (30%)</p>
-                <p> &#129504; Performance tuning and optimization (20%)</p>
-                <p> &#129504; Troubleshooting and debugging (20%)</p>
-            `,
-            "Informatica Data Quality 10.x Developer": `
-                <h3>Informatica Data Quality 10.x Developer</h3>
-                <p>This certification validates your skills in designing and implementing data quality solutions using Informatica.</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/informatica-data-quality-developer/?couponCode=LEARNNOWPLANS" target="_blank">Informatica Data Quality Developer Course</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=60re4ZdvqiU&list=PL6-z-bxaKesbwPsBPc-zxD_usbooi8anc" target="_blank">Informatica Data Data Quality</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Informatica%20Data%20Quality" target="_blank">Informatica Data Quality Shoshin Course</a></p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Designing data quality workflows (30%)</p>
-                <p> &#129504; Implementing data profiling techniques (25%)</p>
-                <p> &#129504; Creating data cleansing and validation rules (25%)</p>
-                <p> &#129504; Monitoring and reporting on data quality (20%)</p>
-            `,
-            "Informatica PowerCenter Data Integration 10.x": `
-                <h3>Informatica PowerCenter Data Integration 10.x</h3>
-                <p>This certification demonstrates your expertise in using Informatica PowerCenter for data integration tasks.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/informatica-cloud-data-integration/?couponCode=LEARNNOWPLANS" target="_blank">Informatica PowerCenter Data Integration 10.x</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=3scD3llibJA" target="_blank">Informatica PowerCenter Data Integration 10.x</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Informatica%20PowerCenter%20Data%20Integration%2010.x" target="_blank">Informatica PowerCenter Data Integration 10.x Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Developing and deploying PowerCenter mappings (30%)</p>
-                <p> &#129504; Configuring and managing workflows (30%)</p>
-                <p> &#129504; Performance optimization techniques (20%)</p>
-                <p> &#129504; Troubleshooting and debugging (20%)</p>
-            `,
-            "Informatica Cloud Data Integration": `
-                <h3>Informatica Cloud Data Integration</h3>
-                <p>This certification validates your ability to implement data integration solutions in the Informatica Cloud environment.</p>
-                <h4>Exam Details</h4>
-                <p><strong>Format:</strong> 60 questions (multiple choice)</p>
-                <p><strong>Duration:</strong> 120 minutes</p>
-                <h4>Useful links</h4>
-                <p><strong>Udemy Course:</strong> <a href="https://www.udemy.com/course/informatica-cloud-data-integration/" target="_blank">Informatica Cloud Data Integration</a></p>
-                <p><strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=Tz4Yj20Cv6A" target="_blank">Informatica Cloud Data Integration</a></p>
-                <p><strong>Shoshin Course:</strong> <a href="https://shoshin.ltimindtree.com/search/Informatica%20Cloud%20Data%20Integration" target="_blank">Informatica Cloud Data Integration Shoshin Course</a></p>
-                <h4>Skills Measured</h4>
-                <p> &#129504; Designing cloud integration workflows (30%)</p>
-                <p> &#129504; Implementing data mappings (30%)</p>
-                <p> &#129504; Managing and monitoring cloud data integrations (20%)</p>
-                <p> &#129504; Troubleshooting and optimization (20%)</p>
-            `
-        };
-
-        // Display the information
-        if (certificationInfo[selectedRole]) {
-            infoBox.innerHTML = certificationInfo[selectedRole];
-        } else {
-            infoBox.innerHTML = "<p>Select a certification from the dropdowns to see details here.</p>";
-        }
-    }
-
-    dropdowns.forEach(dropdown => {
-        dropdown.addEventListener('change', () => {
-            const selectedValue = dropdown.value;
-            infoBox.innerHTML = certificationInfo[selectedValue] || `
-                <h4>Certification Details</h4>
-                <p>Select a certification from the dropdowns to see details here.</p>
-            `;
-        });
-    });
-    document.querySelectorAll('.step-link, .next-step').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-                    // Hide all sections
-                    document.querySelectorAll('.steps-content .step-content').forEach(section => {
-                        section.style.display = 'none';
-                    });
-                    // Show the target section
-                    targetElement.style.display = 'block';
-                    // Scroll to the target section
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-
-<!--        if (selectedValue){-->
-<!--            localStorage.setItem("selectedValue",selectedValue);-->
-<!--        }-->
-<!--        const certification=localStorage.getItem("selectedValue");-->
-<!--        console.log(certification);-->
-
-        const alertContainer = document.getElementById('alert-container');
-        const loginMessage = sessionStorage.getItem('loginMessage');
-        const logoutMessage = sessionStorage.getItem('logoutMessage');
-
-        if (loginMessage) {
-            alertContainer.innerHTML += `<div class="alert alert-success">${loginMessage}</div>`;
-            sessionStorage.removeItem('loginMessage'); // Clear message after displaying
-        }
-
-        if (logoutMessage) {
-            alertContainer.innerHTML += `<div class="alert alert-info">${logoutMessage}</div>`;
-            sessionStorage.removeItem('logoutMessage'); // Clear message after displaying
-        }
-
-        // Handle logout link click
-        document.getElementById('logout-link').addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent default anchor behavior
-
-            // Simulate logout
-            sessionStorage.setItem('logoutMessage', 'You have been logged out.');
-            window.location.href = 'login.html'; // Redirect to the login page or home page
-        });
-</script>
+<script src="{% static 'js/certe_script.js' %}"></script>
 </html>

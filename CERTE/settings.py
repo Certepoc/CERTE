@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import urllib.parse
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -120,8 +122,27 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+MEDIA_ROOT = [os.path.join(BASE_DIR, 'media')]
+MEDIA_URL = '/media/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/redirect/'
+#AUTH_USER_MODEL = 'myapp.CustomUser'
+#DATABASE_PATH = 'sqlitecloud://cocqiulhnk.sqlite.cloud:8860/db.sqlite3?apikey=JRUePUsxlX3eKAZymQDNi5eyDvaFbF9a6QVMXjqZV68'
+
+connection_string = "sqlitecloud://cbo1cuvdhk.g5.sqlite.cloud:8860/db.sqlite3?apikey=9pwuPMxHjPbu77imSRpftJOjdNgOWrTUUbBm19TUqSM"
+parsed_url = urllib.parse.urlparse(connection_string)
+
+# Extracting the database name
+db_name = parsed_url.path[1:]  # Remove leading '/'
+apikey = urllib.parse.parse_qs(parsed_url.query).get('apikey', [None])[0]
+
+# Set DATABASE_PATH for local SQLite file (if applicable)
+#DATABASE_PATH = db_name  # You can also set a full path if needed
+DATABASE_PATH = 'C:\\Users\\10742021\\Desktop\\gitcommit\\CERTE\\db.sqlite3'
+
+# Store the API key in an environment variable
+os.environ['SQLITECLOUD_API_KEY'] = apikey
