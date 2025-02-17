@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
+
 import os
 import urllib.parse
+from pathlib import Path
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,12 +29,13 @@ SECRET_KEY = 'django-insecure-qbb^r$z1=epklwd74^nc**09ufo*dw+7_5u7i-ubbbar-g#3k5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
     'myapp',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -119,8 +122,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 
 MEDIA_ROOT = [os.path.join(BASE_DIR, 'media')]
 MEDIA_URL = '/media/'
@@ -141,8 +148,8 @@ db_name = parsed_url.path[1:]  # Remove leading '/'
 apikey = urllib.parse.parse_qs(parsed_url.query).get('apikey', [None])[0]
 
 # Set DATABASE_PATH for local SQLite file (if applicable)
-#DATABASE_PATH = db_name  # You can also set a full path if needed
-DATABASE_PATH = 'C:\\Users\\10742021\\Desktop\\gitcommit\\CERTE\\db.sqlite3'
+DATABASE_PATH = db_name  # You can also set a full path if needed
+#DATABASE_PATH = 'C:\\Users\\10821476\\PycharmProjects\\pythonProject\\CERTE\\db.sqlite3'
 
 # Store the API key in an environment variable
 os.environ['SQLITECLOUD_API_KEY'] = apikey
