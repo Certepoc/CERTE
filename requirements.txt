@@ -11,4 +11,5 @@ requests==2.32.3
 SQLAlchemy==2.0.35
 sqlitecloud==0.0.83
 sqlparse==0.5.1
+whitenoise==6.4.0
 
