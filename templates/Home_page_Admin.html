@@ -475,7 +475,7 @@
         }
 
         function fetchUsers() {
-            fetch(`http://127.0.0.1:8000/user_list/`)
+            fetch(`/user_list/`)
                 .then(response => response.json())
                 .then(data => {
                     const userTableBody = document.getElementById('userTableBody');
@@ -519,7 +519,7 @@
         const rowId = `row-${userId}`; // Construct the row ID
         const csrfToken = getCookie('csrftoken');
 
-        fetch(`http://127.0.0.1:8000/delete_user/${userId}/`, {
+        fetch(`/delete_user/${userId}/`, {
             method: 'DELETE',
             headers: {
                 'X-CSRFToken': csrfToken,
@@ -623,7 +623,7 @@
             const isActive = document.getElementById('updateIsActive').checked;
             const csrfToken = getCookie('csrftoken'); // Ensure this function is defined
 
-            fetch(`http://127.0.0.1:8000/update_user/`, {
+            fetch(`/update_user/`, {
                 method: 'POST', // or PUT, depending on your API
                 headers: {
                     'Content-Type': 'application/json',
@@ -1146,7 +1146,7 @@
 
         // Function to fetch certifications
         function fetchCertifications() {
-            fetch(`http://127.0.0.1:8000/certification_list/`)
+            fetch('/certification_list/')
                 .then(response => {
                     if (!response.ok) {
                         console.error('Response status:', response.status); // Log status for debugging
