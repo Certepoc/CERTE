@@ -1,0 +1,232 @@
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #fff;
+      color: #333; /* Dark text color for contrast */
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh; /* Ensure the body takes full height */
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      background: #fff;
+            border-bottom: 1px solid #ddd;
+      height: 10%; /* Navbar height */
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 50px; /* Logo size */
+      margin-right: 10px;
+    }
+
+    .logo h1 {
+      font-size: 24px;
+      margin: 0;
+      color: #000000; /* Dark blue for logo text */
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center; /* Align items in a single row */
+    }
+
+    .user-info span {
+      margin-right: 15px; /* Space between welcome message and logout button */
+      font-weight: bold; /* Make the welcome message bold */
+    }
+
+    .user-info a {
+      text-decoration: none;
+      color: #fff; /* White text color */
+      background: linear-gradient(to right, #64b5f6, #42a5f5); /* Blue gradient for button */
+      padding: 8px 12px;
+      border-radius: 20px; /* Rounded button */
+      transition: background 0.3s;
+    }
+
+    .user-info a:hover {
+      background: linear-gradient(to right, #42a5f5, #1e88e5); /* Darker blue on hover */
+    }
+
+    main {
+      display: flex;
+      flex: 1;
+      background: #ffffff; /* White background for main content */
+      height: 80%; /* Main area height */
+      overflow: hidden; /* Prevent overflow */
+    }
+
+    .sidebar {
+      width: 250px; /* Fixed width for sidebar */
+      padding: 20px;
+      border-right: 1px solid #ddd;
+      background: linear-gradient(to bottom, #ffffff, #f1f9ff); /* Light blue gradient */
+      overflow-y: auto; /* Enable scrolling */
+    }
+
+    .sidebar h3 {
+      margin-top: 0;
+      color: #3f51b5; /* Dark blue for sidebar heading */
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar li {
+      margin: 10px 0;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #333; /* Dark text color */
+      padding: 10px;
+      display: block; /* Make the entire area clickable */
+      border-radius: 20px; /* Rounded menu items */
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background: rgba(66, 165, 245, 0.3); /* Light blue on hover */
+    }
+
+    .content {
+      flex: 1; /* Take remaining space */
+      padding: 20px;
+      overflow-y: auto; /* Enable scrolling for content */
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      flex: 1;
+      margin: 0 10px; /* Space between cards */
+      display: flex;
+      align-items: center;
+      border: 1px solid transparent; /* Initial border */
+      background-clip: padding-box; /* Ensure border doesn't overlap */
+      position: relative; /* For pseudo-element */
+      border-image: linear-gradient(to right, #0d65a4, white) 1; /* Gradient border */
+      border-width: 1px;
+    }
+
+    .card-icon {
+      font-size: 50px; /* Enlarged icon size */
+      margin-right: 15px; /* Space between icon and text */
+      color: #3f51b5; /* Icon color */
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .card-value {
+      font-size: 24px;
+      color: #1e88e5; /* Value color */
+      margin: 5px 0 0; /* Space above value */
+    }
+
+    .certified-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #ffffff; /* White background for certified section */
+  border-radius: 10px; /* Match the card border radius */
+  border: 1px solid transparent; /* Initial border */
+  border-image: linear-gradient(to right, #0d65a4, white) 1; /* Gradient border */
+}
+
+
+    .certified-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0 0 20px; /* Space below title */
+    }
+
+    .certified-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .certified-table th, .certified-table td {
+      border: none; /* Remove borders */
+      padding: 10px;
+      text-align: center;
+    }
+
+    .certified-table th {
+      background-color: white; /* White background for header */
+      color: #3f51b5; /* Dark blue text for header */
+    }
+
+    .certified-table td img {
+      width: 40px; /* Enlarged icon size */
+      margin-right: 10px; /* Space between icon and text */
+      vertical-align: middle; /* Align icon vertically */
+    }
+
+    .notifications {
+      margin-top: 20px;
+      background: #f0f4f8; /* Light grey background for notifications */
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .notifications h3 {
+      margin-top: 0;
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff; /* White background for footer */
+      border-top: 1px solid #ddd;
+      padding: 20px 0; /* Added padding above and below */
+    }
+
+    footer p {
+      margin: 0;
+      color: #0d0d0e; /* Dark blue for footer text */
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%; /* Full width on smaller screens */
+        border-right: none; /* Remove border */
+      }
+      main {
+        flex-direction: column; /* Stack sidebar and content */
+      }
+      .stats {
+        flex-direction: column; /* Stack cards vertically on smaller screens */
+      }
+      .card {
+        margin: 10px 0; /* Space between cards */
+      }
+    }

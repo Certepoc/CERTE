@@ -135,17 +135,21 @@ body {
             display: flex;
             justify-content: space-between;
             gap: 20px;
+            flex-wrap: wrap; /* Allows wrapping */
         }
+
         .left-card, .right-card {
             background-color: #e0e0e0;
             padding: 20px;
             margin: 10px;
-            flex: 1;
+            flex: 1 1 calc(50% - 40px); /* Responsive width */
             text-align: center;
             border: 1px solid #aaa;
             border-radius: 15px;
             max-height: 400px;
+            box-sizing: border-box; /* Include padding and border */
         }
+
         .gap {
             margin-top: 15px;
         }

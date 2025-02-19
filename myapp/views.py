@@ -1,3 +1,4 @@
+import calendar
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
@@ -6,24 +7,26 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import sqlite3
-from django.http import JsonResponse
+import sqlitecloud
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 import json
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse,HttpResponse
 from django.urls import reverse
-from datetime import datetime,date
+from datetime import datetime,date,timedelta
+from .forms import CertificationForm
 from .models import *
 from django.views.decorators.http import require_http_methods
 import logging
 from CERTE import settings
 from django.conf import settings
+import re
 
 logging.basicConfig(level=logging.INFO)
 
 def redirect_to_section(request, section):
-    return redirect(f'/Home_page/#{section}')
-
+    # return redirect(f'/Home_page/#{section}')
+    return redirect(f'/#{section}')
 def connect_db():
     try:
         conn = sqlite3.connect(settings.DATABASE_PATH)
@@ -34,7 +37,6 @@ def connect_db():
     except Exception as e:
         logging.error(f"Database connection error: {e}")
         return None
-
 
 def get_db_schema():
     conn = connect_db()
@@ -124,6 +126,36 @@ def login_view(request):
         'logged_out': logged_out,
     })
 
+def validate_date_format(date_string):
+    # Check if the date_string is in 'YYYY-MM-DD' format
+    date_pattern = r'^\d{4}-\d{2}-\d{2}$'
+    if re.match(date_pattern, date_string):
+        return True
+    # Check if the date_string is in 'MM-DD-YYYY' format
+    date_pattern_mmddyyyy = r'^\d{2}-\d{2}-\d{4}$'
+    if re.match(date_pattern_mmddyyyy, date_string):
+        return True
+    return False
+
+def convert_date_to_string(date_input):
+    # Handle integer input (Excel date serial number)
+    if isinstance(date_input, int):
+        base_date = datetime(1899, 12, 30)
+        return (base_date + timedelta(days=date_input)).strftime('%Y-%m-%d')
+    # Handle string input
+    elif isinstance(date_input, str):
+        try:
+            # Check if it's in 'MM-DD-YYYY' format
+            if re.match(r'^\d{2}-\d{2}-\d{4}$', date_input):
+                date_obj = datetime.strptime(date_input, '%m-%d-%Y')
+                return date_obj.strftime('%Y-%m-%d')
+            # If it's already in 'YYYY-MM-DD', return it as is
+            elif re.match(r'^\d{4}-\d{2}-\d{2}$', date_input):
+                return date_input
+        except ValueError:
+            return None
+    return None
+
 @csrf_exempt  # Use this only if you are not using CSRF tokens; otherwise, ensure CSRF protection is in place
 def save_vouchers(request):
     if request.method == 'POST':
@@ -194,31 +226,49 @@ def save_vouchers(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
-def validate_date_format(date_str):
-    """Validate the date format (DD-MM-YYYY). Adjust as needed."""
-    import re
-    pattern = r'^\d{2}-\d{2}-\d{4}$'
-    return re.match(pattern, date_str) is not None
-
-def convert_date_to_string(date_input):
-    # Handle integer input (Excel date serial number)
-    if isinstance(date_input, int):
-        base_date = datetime(1899, 12, 30)
-        return (base_date + timedelta(days=date_input)).strftime('%Y-%m-%d')
-    # Handle string input
-    elif isinstance(date_input, str):
+@csrf_exempt
+def get_vouchers(request):
+    if request.method == 'GET':
         try:
-            # Check if it's in 'MM-DD-YYYY' format
-            if re.match(r'^\d{2}-\d{2}-\d{4}$', date_input):
-                date_obj = datetime.strptime(date_input, '%m-%d-%Y')
-                return date_obj.strftime('%Y-%m-%d')
-            # If it's already in 'YYYY-MM-DD', return it as is
-            elif re.match(r'^\d{4}-\d{2}-\d{2}$', date_input):
-                return date_input
-        except ValueError:
-            return None
-    return None
+            conn = sqlite3.connect(settings.DATABASE_PATH)
+            cursor = conn.cursor()
+
+            # Fetch all vouchers
+            cursor.execute("SELECT * FROM vouchers")
+            rows = cursor.fetchall()
+
+            vouchers = []
+            for row in rows:
+                vouchers.append({
+                    'certification_name': row[0],
+                    'voucher_code': row[1],
+                    'expiration_date': row[2],
+                    'discount_percentage': row[3],
+                    'psid': row[4],
+                    'is_active': row[5],
+                    'update_time': row[6]
+                })
+
+            # Fetch inactive voucher codes
+            cursor.execute("SELECT voucher_code FROM vouchers WHERE psid IS NULL AND is_active IS NULL")
+            inactive_voucher_codes = cursor.fetchall()
+
+            # Convert the result to a list of voucher codes
+            inactive_voucher_codes_list = [row[0] for row in inactive_voucher_codes]
+
+            conn.close()
+
+            if not vouchers:
+                return JsonResponse({'success': False, 'message': 'No vouchers found'}, status=404)
+
+            return JsonResponse({'success': True, 'vouchers': vouchers, 'inactive_voucher_codes': inactive_voucher_codes_list}, status=200)
+
+        except sqlite3.Error as e:
+            return JsonResponse({'success': False, 'error': f'Database error: {str(e)}'}, status=500)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 def insert_user(username, password, email, is_admin, is_active, PSID):
     logging.debug(f"Received username: '{username}', email: '{email}'")
@@ -379,13 +429,15 @@ def update_user_in_db(user_id, username=None, email=None, is_admin=None, is_acti
             logging.error(f"An error occurred while updating user with ID: {user_id}. Error: {e}")
     else:
         logging.info(f"No updates provided for user with ID: {user_id}.")
+
 def update_user(request):
     if request.method == 'POST':
+        print("Form submitted:", request.POST)  # Check what is submitted
         user_id = request.POST.get('user_id')
         username = request.POST.get('username')
         email = request.POST.get('email')
-        is_admin = request.POST.get('is_admin') == 'on'
-        is_active = request.POST.get('is_active') == 'on'
+        is_admin = request.POST.get('is_Admin') == 'on'
+        is_active = request.POST.get('is_Active') == 'on'
         print(f"Is Admin: {is_admin}, Is Active: {is_active}")  # Debugging output
 
         # Call the database update function
@@ -395,6 +447,7 @@ def update_user(request):
 
     # If the request method is not POST, redirect or render an error page
     return redirect('home_page_admin')
+
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def delete_user(request, id):
@@ -521,6 +574,12 @@ def user_list1(request):
 class HomePageView(TemplateView):
     template_name = 'Home_page.html'
 
+    def get(self, request, *args, **kwargs):
+        # Print session data for debugging
+        print(self.request.session)  # Add this line to print session information
+
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
@@ -601,6 +660,67 @@ def logout_view(request):
     request.session.flush()
     return redirect('/accounts/login/?logout=true')
 
+@csrf_exempt  # Use this only if you are not using CSRF tokens; otherwise, ensure CSRF protection is in place
+def save_certifications(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            certifications = data.get('items', [])
+            saved_count = 0
+            errors = []
+            # Prepare the SQL insert query (removed validity_years)
+            insert_query = """
+                INSERT INTO certification (ID, name, provider, status)
+                VALUES (?, ?, ?, ?);
+            """
+            # Prepare data for bulk insert (removed validity_years)
+            insert_data = []
+            for certification in certifications:
+                insert_data.append((
+                    certification['id'],
+                    certification['name'],
+                    certification['provider'],
+                    certification['status']
+                ))
+            # Connect to the database
+            conn = connect_db()
+            cursor = conn.cursor()
+            try:
+                cursor.executemany(insert_query, insert_data)
+                saved_count = cursor.rowcount  # Get the count of rows affected
+                conn.commit()
+            except Exception as e:
+                errors.append({'error': str(e)})
+            finally:
+                cursor.close()
+                conn.close()
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully saved {saved_count} certifications.',
+                'total_count': len(certifications),
+                'errors': errors,
+                'redirect_url': reverse('home_page_admin')
+            })
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON data'}, status=400)
+        except sqlite3.Error as e:
+            return JsonResponse({'success': False, 'error': f'Database error: {str(e)}'}, status=500)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'}, status=500)
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+#view to get employee certification details from table
+
+def insert_certfication(request):
+    # return render(request, 'certdata.html')
+    if request.method=="POST":
+        form=CertificationForm(request.POST,request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('cert_records')
+    else:
+        form=CertificationForm()
+        return render(request,'certification_form.html',{'form':form})
 
 # View to handle the form submission
 @csrf_exempt
@@ -624,7 +744,6 @@ def change_passw(request):
         user_id = request.session.get('email')
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
-
 
         # Fetch the user using the user_id
         conn = sqlite3.connect(settings.DATABASE_PATH)
@@ -702,55 +821,69 @@ def change_passw1(request):
 
     return render(request, 'Home_page.html')
 
-
-@csrf_exempt  # Use this only if you are not using CSRF tokens; otherwise, ensure CSRF protection is in place
-def save_certifications(request):
-    if request.method == 'POST':
+@csrf_exempt  # Use this only for testing; ensure CSRF protection in production
+def update_certification(request, id):
+    if request.method == 'PUT':
         try:
-            data = json.loads(request.body)
-            certifications = data.get('items', [])
-            saved_count = 0
-            errors = []
-            # Prepare the SQL insert query (removed validity_years)
-            insert_query = """
-                INSERT INTO certification (ID, name, provider, status)
-                VALUES (?, ?, ?, ?);
-            """
-            # Prepare data for bulk insert (removed validity_years)
-            insert_data = []
-            for certification in certifications:
-                insert_data.append((
-                    certification['id'],
-                    certification['name'],
-                    certification['provider'],
-                    certification['status']
-                ))
-            # Connect to the database
-            conn = connect_db()
+            data = json.loads(request.body)  # Parse the JSON data from the request
+
+            # Get the certification object by ID
+            certification = get_object_or_404(Certification, id=id)
+
+            # Prepare SQL query for updates
+            sql_query = "UPDATE certifications SET "
+            updates = []
+            params = []
+
+            if 'name' in data:
+                certification.name = data['name']
+                updates.append("name = ?")
+                params.append(certification.name)
+
+            if 'provider' in data:
+                certification.provider = data['provider']
+                updates.append("provider = ?")
+                params.append(certification.provider)
+
+            if 'status' in data:
+                certification.status = data['status']
+                updates.append("status = ?")
+                params.append(certification.status)
+
+            if 'validity_years' in data:
+                certification.validity_years = data['validity_years']  # Assuming this field exists
+                updates.append("validity_years = ?")
+                params.append(certification.validity_years)
+
+            # Append the ID for the WHERE clause
+            params.append(id)
+            sql_query += ", ".join(updates) + " WHERE id = ?"
+
+            # Connect to the database and execute the query
+            conn = sqlite3.connect(settings.DATABASE_PATH)
             cursor = conn.cursor()
+
             try:
-                cursor.executemany(insert_query, insert_data)
-                saved_count = cursor.rowcount  # Get the count of rows affected
+                cursor.execute(sql_query, params)
                 conn.commit()
-            except Exception as e:
-                errors.append({'error': str(e)})
+                logging.info(f"Updated certification with ID: {id} successfully.")
+                return JsonResponse({'success': 'Certification updated successfully.'}, status=200)
+            except sqlite3.Error as e:
+                logging.error(f"An error occurred while updating certification with ID: {id}. Error: {e}")
+                return JsonResponse({'error': 'Failed to update certification.'}, status=500)
             finally:
                 cursor.close()
                 conn.close()
-            return JsonResponse({
-                'success': True,
-                'message': f'Successfully saved {saved_count} certifications.',
-                'total_count': len(certifications),
-                'errors': errors,
-                'redirect_url': reverse('home_page_admin')
-            })
+
         except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid JSON data'}, status=400)
-        except sqlite3.Error as e:
-            return JsonResponse({'success': False, 'error': f'Database error: {str(e)}'}, status=500)
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         except Exception as e:
-            return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'}, status=500)
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+            logging.error(f"Unexpected error: {str(e)}")
+            return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
 def insert_certifications_to_db(certifications):
     conn = sqlite3.connect(settings.DATABASE_PATH)
     cursor = conn.cursor()
@@ -779,11 +912,15 @@ def insert_cert_bulk(request):
             data = json.loads(request.body)
             logging.info(f"Received request body: {request.body.decode('utf-8')}")
 
+            # Check if data is empty
             if not data:
                 return JsonResponse({'success': False, 'error': 'No data provided'}, status=400)
 
-            if not isinstance(data, list):
-                return JsonResponse({'success': False, 'error': 'Expected a list of certifications'}, status=400)
+            # Ensure data is a list or a single dictionary
+            if isinstance(data, dict):
+                data = [data]  # Wrap single entry in a list
+            elif not isinstance(data, list):
+                return JsonResponse({'success': False, 'error': 'Expected a list of certifications or a single certification'}, status=400)
 
             insert_data = []
             errors = []
@@ -798,7 +935,7 @@ def insert_cert_bulk(request):
                 except KeyError as e:
                     errors.append(f'Missing key: {str(e)} in certification {cert}')
                 except ValueError as e:
-                    errors.append(f'Invalid value for Id in certification {cert}: {e}')
+                    errors.append(f'Invalid value for ID in certification {cert}: {e}')
 
             if errors:
                 return JsonResponse({'success': False, 'errors': errors}, status=400)
@@ -848,6 +985,7 @@ def certification_list(request):
     finally:
         if conn:
             conn.close()
+
 
 @csrf_exempt  # Use this only for testing; ensure CSRF protection in production
 def update_certification(request, id):
@@ -910,11 +1048,12 @@ def update_certification(request, id):
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-#Leadership module request response
+#view to get employee certification details from table
 def get_employee_certification_records(request):
     if request.method=='POST':
         jdata=json.loads(request.body)
         category=jdata.get('category')
+
     quarter_dict = {1: ['Apr', 'May', 'Jun'], 2: ['Jul', 'Aug', 'Sep'],
                     3: ['Oct', 'Nov', 'Dec'], 4: ['Jan', 'Feb', 'Mar']}
 
@@ -938,12 +1077,12 @@ def get_employee_certification_records(request):
                      4: (datetime(data_year, 1, 1), datetime(data_year, 3, 31))}
     start_date=quarter_dates[data_quarter][0]
     end_date = quarter_dates[data_quarter][1]
-    data_filter=EmployeeCertifications.objects.filter(update_date__gte=start_date,update_date__lte=end_date,certification_name__icontains=category,certification_status='Completed').values('employee_ps_no','employee_name').annotate(cert_count=Count('certification_name')).order_by('-cert_count')[:3]
-    data1=list(data_filter.values('employee_name'))
+    data_filter=EmployeeCertifications.objects.filter(update_date__gte=start_date,update_date__lte=end_date,provider__icontains=category,certification_status='Completed').values('employee_ps_no','employee_name').annotate(cert_count=Count('provider')).order_by('-cert_count')[:3]
+    data1=list(data_filter.values('employee_ps_no','employee_name'))
+    print(data1)
     quarter_data={'quarter':data_quarter,'year':data_year}
     data={'emp_data':data1,'quarter_data':quarter_data}
     return JsonResponse(data,safe=False)
-
 def get_overall_cert_champ(request):
     today = date.today()
     current_month = today.month
@@ -955,8 +1094,20 @@ def get_overall_cert_champ(request):
         cert_count=Count('certification_name')).order_by('-cert_count')[:3]
     data = list(data_filter.values('employee_name','cert_count'))
     return JsonResponse(data, safe=False)
+def insert_certfication(request):
+    # return render(request, 'certdata.html')
+    if request.method=="POST":
+        form=CertificationForm(request.POST,request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('cert_records')
+    else:
+        form=CertificationForm()
+        return render(request,'certification_form.html',{'form':form})
+# View to handle the form submission
 
-###enrollment Section ####
+#Working with user voucher management
+#need to be del
 def get_providers(request):
     providers = []  # Initialize an empty list for providers
     if request.method == 'GET':
@@ -979,6 +1130,7 @@ def get_names_by_provider(request):
     if request.method == 'GET':
         provider = request.GET.get('provider')
         conn = sqlite3.connect(settings.DATABASE_PATH)
+
         try:
             cursor = conn.cursor()
             cursor.execute("SELECT id, name FROM certification WHERE Provider = ?", (provider,))
@@ -992,7 +1144,7 @@ def get_names_by_provider(request):
     return JsonResponse(list(names), safe=False)
 
 def save_enrollment(request):
-    received_username = request.session.get('username')
+    received_username = request.session.get('email')
 
     # Connect to the SQLite database
     conn = sqlite3.connect(settings.DATABASE_PATH)
@@ -1000,13 +1152,21 @@ def save_enrollment(request):
 
     try:
         # Execute the query using the correct placeholder
-        cursor.execute("SELECT PSID FROM Users WHERE username = ?", (received_username,))
-        psid = cursor.fetchone()
-        psid=int(psid[0])
+        cursor.execute("SELECT PSID FROM Users WHERE email = ?", (received_username,))
+        psno = cursor.fetchone()
+
+        # Check if psno is None
+        if psno is None:
+            # return JsonResponse({'error': 'User not found.'}, status=404)
+            return JsonResponse({'status': 'error', 'message': 'User not found.'})
+
+        psid = int(psno[0])
 
         if request.method == "POST":
-            provider = request.POST.get('provider')
-            certname = request.POST.get('name')
+            jdata = json.loads(request.body)
+            provider = jdata.get('provider')
+            certname = jdata.get('name')
+
             try:
                 enrollment_rec = EmployeeCertifications.objects.filter(
                     employee_name=received_username,
@@ -1014,30 +1174,34 @@ def save_enrollment(request):
                 ).exclude(certification_status__icontains='fail')
 
                 if enrollment_rec.exists():
-                    return JsonResponse({'message': 'User already registered.'})
+                    # return JsonResponse({'message': 'User already registered.'})
+                    return JsonResponse({'status': 'exist', 'message': 'Already Registered.'})
                 else:
                     # If record doesn't exist, create a new record
                     obj = EmployeeCertifications.objects.create(
                         employee_name=received_username,
-                        employee_ps_no=psid,  # Replace with actual logic to fetch PS No
+                        employee_ps_no=psid,
+                        provider=provider,
                         certification_name=certname,
                         certification_status='enrolled',
-                        provider='provider',
                         update_date=timezone.now()  # Use timezone-aware datetime
                     )
-                    return redirect('redirect_to_section', section='enrollment')
+                    # return redirect('redirect_to_section', section='enrollment')
+                    return JsonResponse({'status': 'success', 'message': 'Registered.'})
             except Exception as e:
                 # Handle exceptions
                 print(f"Error: {e}")
-                return JsonResponse({'error': 'An error occurred.'})
+                # return JsonResponse({'error': 'An error occurred.'})
+                return JsonResponse({'status': 'error', 'message': 'An error occurred.'})
     finally:
         # Close the cursor and connection
         cursor.close()
         conn.close()
 
-    return redirect('redirect_to_section', section='enrollment')
+    # return redirect('redirect_to_section', section='enrollment')
+
 def show_enrollment(request):
-    received_username = request.session.get('username')
+    received_username = request.session.get('email')
 
     if not received_username:
         return JsonResponse({'error': 'User not logged in.'}, status=401)
@@ -1048,7 +1212,7 @@ def show_enrollment(request):
 
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT username FROM Users WHERE username = ?", (received_username,))
+        cursor.execute("SELECT username FROM Users WHERE email = ?", (received_username,))
         name = cursor.fetchall()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
@@ -1069,13 +1233,12 @@ def show_enrollment(request):
     # Return enrollment data as JSON
     return JsonResponse(list(enrollment_data), safe=False)
 
-###Voucher request response user module
 @csrf_exempt
 def update_certification_status(request):
     if request.method == 'POST':
         certification_name = request.POST.get('certification_name')
         new_status = request.POST.get('new_status')
-        username = request.session.get('username')
+        username = request.session.get('email')
 
         try:
             certification = EmployeeCertifications.objects.get(
@@ -1094,7 +1257,7 @@ def update_exam_date(request):
     if request.method == 'POST':
         certification_name = request.POST.get('certification_name')
         date = request.POST.get('date')
-        username = request.session.get('username')
+        username = request.session.get('email')
         try:
             certification = EmployeeCertifications.objects.get(
                 employee_name=username,
@@ -1111,11 +1274,11 @@ def update_exam_date(request):
 ####Admin interphase request response functionality
 def get_wcp_request_records(request):
     wcp_request_data = EmployeeCertifications.objects.filter(certification_status='WCP Test Requested').values('id','certification_name','employee_name')
-    print(wcp_request_data)
     return JsonResponse(list(wcp_request_data), safe=False)
 
 def get_wcp_completed_records(request):
     wcp_completion_data = EmployeeCertifications.objects.filter(certification_status='WCP Completed').values('id','certification_name','employee_name')
+    print(wcp_completion_data)
     return JsonResponse(list(wcp_completion_data), safe=False)
 
 @csrf_exempt
@@ -1131,58 +1294,10 @@ def update_status_voucher(request, pk):
             obj.certification_status = 'WCP Assigned'
 
         obj.save()
+        print(obj)
         return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'error'})
-
-def certificate_upload(request):
-    if request.method == 'POST':
-        # Get form fields
-        name = request.POST.get('name')
-        exam_result = request.POST.get('exam_result')
-        request_id = request.POST.get('request_id')
-        request_id_value = request.POST.get('request_id_value')
-
-        user = request.session.get('username')
-
-        # Get PSID
-        conn = sqlite3.connect(settings.DATABASE_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT PSID FROM Users WHERE username = ?", (user,))
-        psid = cursor.fetchone()
-        conn.close()  # Close the database connection
-
-        if psid:
-            psid = int(psid[0])
-        else:
-            return HttpResponse("User PSID not found", status=400)
-
-        # Get or create the EmployeeCertifications record
-        cert, created = EmployeeCertifications.objects.get_or_create(
-            employee_name=user,
-            certification_name=name,
-            defaults={
-                'employee_ps_no': psid,
-                'certification_status': 'enrolled',
-                'update_date': timezone.now()
-            }
-        )
-
-        # Update certification status based on exam result
-        if exam_result == 'fail':
-            cert.certification_status = 'Failed'
-            cert.uploaded_certificate = 'yes'
-        else:
-            cert.certification_status = 'Completed'
-            cert.uploaded_certificate = 'yes'
-
-        # Update request ID if provided
-        if request_id == "yes" and request_id_value:
-            cert.request_id = request_id_value
-
-        cert.save()
-
-    return redirect('redirect_to_section', section='dashboard')
 
 @csrf_exempt
 def upload_certificate_request(request):
@@ -1251,6 +1366,58 @@ def upload_certificate_request(request):
             return JsonResponse({'success': False, 'error': f'Unexpected error: {str(e)}'}, status=500)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+def certificate_upload(request):
+    if request.method == 'POST':
+        # Get form fields
+        provider=request.POST.get('provider')
+        print(provider)
+        name = request.POST.get('name')
+        exam_result = request.POST.get('exam_result')
+        request_id = request.POST.get('request_id')
+        request_id_value = request.POST.get('request_id_value')
+
+        user = request.session.get('email')
+
+        # Get PSID
+        conn = sqlite3.connect(settings.DATABASE_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT PSID FROM Users WHERE email = ?", (user,))
+        psid = cursor.fetchone()
+        conn.close()  # Close the database connection
+
+        if psid:
+            psid = int(psid[0])
+        else:
+            return HttpResponse("User PSID not found", status=400)
+
+        # Get or create the EmployeeCertifications record
+        cert, created = EmployeeCertifications.objects.get_or_create(
+            employee_name=user,
+            certification_name=name,
+            provider=provider,
+            defaults={
+                'employee_ps_no': psid,
+                'certification_status': 'enrolled',
+                'update_date': timezone.now()
+            }
+        )
+
+        # Update certification status based on exam result
+        if exam_result == 'fail':
+            cert.certification_status = 'Failed'
+            cert.uploaded_certificate = 'no'
+        else:
+            cert.certification_status = 'Completed'
+            cert.uploaded_certificate = 'yes'
+
+        # Update request ID if provided
+        if request_id == "yes" and request_id_value:
+            cert.request_id = request_id_value
+
+        cert.save()
+
+    return redirect('redirect_to_section', section='dashboard')
 
 def get_voucher(request):
     update_time=datetime.now()

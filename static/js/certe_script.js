@@ -9,6 +9,47 @@ function showSection(section) {
     window.location.hash = section;
 }
 
+function handleClick(section) {
+    showSection(section);
+
+    // Add any additional function calls here based on the section
+    switch(section) {
+        case 'dashboard':
+            showUserDashboard();
+            break;
+        case 'enrollment':
+            showEnrollmentData();
+            loadProviders();
+            break;
+        case 'leadership':
+            showOverallChamp();
+            fetchData('AWS');
+            showProviders();
+            break;
+        case 'Vouchers':
+             getRegistration();
+             break;
+        case 'upload-certificate':
+             loadProviders();
+             break;
+    }
+
+    // Prevent default link behavior
+    return false;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash) {
+        var section = window.location.hash.substring(1);
+        handleClick(section);
+    }
+});
+
+window.addEventListener('hashchange', function() {
+    var section = window.location.hash.substring(1);
+    handleClick(section);
+});
+
 
     function showEnrollment() {
                 // Hide all main sections
@@ -108,6 +149,9 @@ function showSection(section) {
 		const row=document.createElement('tr');
 		const nameCell=document.createElement('td');
 		nameCell.textContent=employee.employee_name;
+		const psnoCell=document.createElement('td');
+		psnoCell.textContent=employee.employee_ps_no;
+		row.appendChild(psnoCell);
 		row.appendChild(nameCell);
 		tbody.appendChild(row);
 		});
@@ -169,6 +213,8 @@ function showSection(section) {
        success: function(data) {
          $('#provider').empty();
          $('#provider1').empty();
+          $('#provider').append('<option value=" "> --Select Provider-- </option>');
+          $('#provider1').append('<option value=" ">--Select Provider-- </option>');
          $.each(data, function(index,provider) {
            $('#provider').append('<option value="' + provider + '">' + provider + '</option>');
            $('#provider1').append('<option value="' + provider + '">' + provider + '</option>');
@@ -245,6 +291,7 @@ function showSection(section) {
             console.log('Received data:', data);
             data = data.filter(item => item.certification_status !== 'Failed');
             $('#registered_cert_dropdown').empty();
+            $('#registered_cert_dropdown').append('<option value=" ">--Select option--</option>');
             $.each(data, function(index, item) {
                 $('#registered_cert_dropdown').append('<option value="' + item['certification_name'] + '">' + item['certification_name'] + '</option>');
             });
@@ -320,9 +367,6 @@ $(document).ready(function() {
             case 'examdatebtn':
                 newStatus = 'Exam Date Set';
                 break;
-//            case 'voucherreceivedbtn':
-//                showPopup(value);
-
         }
 
         console.log(certificationName);
@@ -463,10 +507,11 @@ $(document).ready(function() {
                         statusElement.textContent="OOPS!!! you haven't cleared certification.";
                     }
                     else if (status=== 'Completed'){//
-                        statusElement.textContent="Congratulations!!! you cleared certification.";
+                        statusElement.textContent="Congrats!!! you cleared certification.";
+                    }
                     }
                     else {
-                        console.log('Selected data not found');
+                    console.log('Selected data not found');
                     }
             });
         },
@@ -611,46 +656,31 @@ function hideRequestIdOptions() {
     document.getElementById('requestIdOptions').style.display = 'none';
     document.getElementById('submitButton').disabled = true;
 }
-//window.addEventListener('hashchange', handleHashChange);
-//window.addEventListener('load', handleHashChange);
 
-function handleClick(section) {
-    showSection(section);
-//    event.preventDefault();
-    // Add any additional function calls here based on the section
-    switch(section) {
-        case 'dashboard':
-            showUserDashboard();
-            break;
-        case 'enrollment':
-            showEnrollmentData();
-            loadProviders();
-            break;
-        case 'leadership':
-            showOverallChamp();
-            fetchData('AWS');
-            showProviders();
-            break;
-        case 'Vouchers':
-             getRegistration();
-             break;
-        case 'upload-certificate':
-             loadProviders();
-             break;
-    }
+//Enrollment data changes
+    function saveEnrollment() {
+    const provider=document.getElementById('provider').value;
+    const name=document.getElementById('name').value;
+    dataToSend={'provider':`${provider}`,'name':`${name}`}
+    console.log(dataToSend)
+    fetch('/save_enrollment/', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+       'X-CSRFToken': getCookie('csrftoken')
+     },
+     body: JSON.stringify(dataToSend)  // Convert the object to a JSON string
+    })
+    .then(response => response.json())
+    .then(data => {
+       if (data.status === 'success') {
+           alert(data.message);
+            window.location.reload();
+       } else if (data.status === 'error') {
+           alert(data.message);
+       }else if (data.status === 'exist') {
+           alert(data.message);
+       }
+    });
+     }
 
-    // Prevent default link behavior
-    return false;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.hash) {
-        var section = window.location.hash.substring(1);
-        handleClick(section);
-    }
-});
-
-window.addEventListener('hashchange', function() {
-    var section = window.location.hash.substring(1);
-    handleClick(section);
-});

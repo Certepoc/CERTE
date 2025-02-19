@@ -13,10 +13,11 @@
 </head>
 <body>
     <header class="d-flex justify-content-between align-items-center p-3 curved-section header">
-        <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 50px; height: 50px;" onclick="showCerteHome();">
+        <img src="{% static 'logo.png' %}" alt="Logo" class="logo" style="width: 50px; height: 50px;" onclick="showCerteHome();">
         <div class="d-flex align-items-center">
             Welcome, {% if received_username %}
             {{ received_username }}
+            <button type="button" class="btn btn-link text-dark mx-2" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
             {% else %}
             Guest
             {% endif %}
@@ -26,14 +27,49 @@
         </div>
     </header>
 
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="changePasswordForm" action="{% url 'change_passw' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <input type="hidden" name="user_id" value="{{ user_id }}">
+                        <div class="form-group">
+                            <label for="current-password">Current Password:</label>
+                            <input type="password" class="form-control" id="current-password" name="current_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">New Password:</label>
+                            <input type="password" class="form-control" id="new-password" name="new_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm New Password:</label>
+                            <input type="password" class="form-control" id="confirm-password" name="confirm_password" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <main class="container-fluid curved-section mb-3 main-content">
         <nav class="col-md-2 bg-light sidebar p-3">
             <ul class="list-unstyled">
-                <li class="py-2"><a href="#dashboard" class="text-decoration-none" onclick="return handleClick('dashboard');" style="font-size: 15px;">&#9201; Dashboard</a></li>
-                <li class="py-2"><a href="#enrollment" class="text-decoration-none" onclick="return handleClick('enrollment');" style="font-size: 15px;">&#128209; Enrollment</a></li>
-                <li class="py-2"><a href="#leadership" class="text-decoration-none" onclick="return handleClick('leadership');" style="font-size: 15px;">&#127942; Leadership</a></li>
-                <li class="py-2"><a href="#Vouchers" class="text-decoration-none" onclick="return handleClick('Vouchers');" style="font-size: 15px;">&#127915; Vouchers</a></li>
-                <li class="py-2"><a href="#upload-certificate" class="text-decoration-none" onclick="return handleClick('upload-certificate');" style="font-size: 15px;">&#127971; Upload Certificate</a></li>
+                <li class="py-2"><a href="#dashboard" class="text-decoration-none" onclick="showSection('dashboard');showUserDashboard()" style="font-size: 15px;">&#9201; Dashboard</a></li>
+                <li class="py-2"><a href="#enrollment" class="text-decoration-none" onclick="showSection('enrollment');showEnrollmentData();loadProviders()" style="font-size: 15px;">&#128209; Enrollment</a></li>
+                <li class="py-2"><a href="#leadership" class="text-decoration-none" onclick="showSection('leadership');showOverallChamp();fetchData('Amazon');showProviders();return false;" style="font-size: 15px;">&#127942; Leadership</a></li>
+                <li class="py-2"><a href="#Vouchers" class="text-decoration-none" onclick="showSection('Vouchers');getRegistration();return false;" style="font-size: 15px;">&#127915; Vouchers</a></li>
+                <li class="py-2"><a href="#upload-certificate" class="text-decoration-none" onclick="showSection('upload-certificate');loadProviders();return false;" style="font-size: 15px;">&#127971; Upload Certificate</a></li>
             </ul>
         </nav>
 
@@ -97,7 +133,7 @@
                     <div class="right-card">
                         <h2>Register for Certification</h2>
                         <div class="gap"></div>
-                        <form id="certificationForm" method="post" action="{% url 'save_enrollment' %}">
+<!--                        <form id="certificationForm" method="post" action="{% url 'save_enrollment' %}">-->
                              {% csrf_token %}
                              <select id="provider" name="provider" onchange="loadNames()">
                                 <option value="">---</option>
@@ -105,8 +141,8 @@
                              <select id="name" name="name">
                                 <option value="">---</option>
                              </select>
-                             <button type="submit">Submit</button>
-                         </form>
+                             <button id="enrollBtn" type="submit" onclick="saveEnrollment()">Submit</button>
+<!--                         </form>-->
                     </div>
                 </div>
             </div>
@@ -167,6 +203,7 @@
                         <table class="provider-table table table-bordered">
                             <thead>
                                 <tr>
+                                    <th>PSID</th>
                                     <th>Name</th>
                                 </tr>
                             </thead>

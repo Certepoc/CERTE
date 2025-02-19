@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certe | LTIMindtree Certification Portal</title>
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="assets/logo1.png" alt="Logo">
+      <h1>Certe.</h1>
+    </div>
+    <div class="user-info">
+      <span>👋 Welcome, Malli</span>
+      <a href="logout.html">🚪 Logout</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="sidebar">
+      <h3>Admin Dashboard</h3>
+      <ul>
+        <li><a href="#" data-target="dashboard">Dashboard</a></li>
+        <li><a href="#" data-target="user-management">Users</a></li>
+        <li><a href="#" data-target="certification-management">Certifications</a></li>
+        <li><a href="#" data-target="voucher-management">Vouchers</a></li>
+      </ul>
+    </div>
+    <div class="content">
+      <h3 style="      color: #141496; /* Dark text color for contrast */      ">Users >></h3>
+      
+      <!-- User Statistics Section -->
+      <div class="stats">
+        <div class="card">
+          <img style="padding-right: 10px" src="assets/users/people.png" height="50px" alt="Informatica"> 
+          <div class="card-content">
+            <div class="card-title">Total Users</div>
+            <div class="card-value">1000</div>
+          </div>
+        </div>
+        <div class="card">
+          <img style="padding-right: 10px" src="assets/users/group.png" height="50px" alt="Informatica"> 
+          <div class="card-content">
+            <div class="card-title">Active Users</div>
+            <div class="card-value">800</div>
+          </div>
+        </div>
+        <div class="card">
+          <img style="padding-right: 10px" src="assets/users/ban-user.png" height="50px" alt="Informatica"> 
+          <div class="card-content">
+            <div class="card-title">Inactive Users</div>
+            <div class="card-value">50</div>
+          </div>
+        </div>
+      </div>
+      <h3 style="      color: #141496; /* Dark text color for contrast */      ">Certification >></h3>
+
+      <!-- Total Certified Section -->
+      <div class="certified-section">
+        <table class="certified-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Platform</th>
+              <th>Certified Users</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><img src="{% static 'assets/icons/aws.png' %}" alt="AWS" > </td>
+              <td>AWS</td>
+              <td>80</td>
+            </tr>
+            <tr>
+              <td><img src="assets/icons/azure.png" alt="Azure"> </td>
+              <td>Azure</td>
+              <td>70</td>
+            </tr>
+            <tr>
+              <td><img src="assets/icons/informatica.png" alt="Informatica"> </td>
+                <td>Informatica</td>
+              <td>50</td>
+            </tr>
+            <tr>
+              <td><img src="assets/icons/powerbi.png" alt="Power BI"> </td>
+              <td>Power BI</td>
+              <td>40</td>
+            </tr>
+            <tr>
+              <td><img src="assets/icons/snowflake.png" alt="Snowflake"> </td>
+              <td>Snowflake</td>
+              <td>30</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 style="      color: #141496; /* Dark text color for contrast */      ">Vouchers >></h3>
+
+
+<!-- Total Vouchers Section -->
+<div class="certified-section">
+  <table class="certified-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Platform</th>
+        <th>Available Vouchers</th>
+        <th>Distributed Vouchers</th>
+        <th>Consumed Vouchers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><img src="assets/icons/aws.png" alt="AWS"> </td>
+        <td>AWS</td>
+        <td>100</td>
+        <td>80</td>
+        <td>50</td>
+      </tr>
+      <tr>
+        <td><img src="assets/icons/azure.png" alt="Azure"> </td>
+        <td>Azure</td>
+        <td>90</td>
+        <td>70</td>
+        <td>40</td>
+      </tr>
+      <tr>
+        <td><img src="assets/icons/informatica.png" alt="Informatica"> </td>
+        <td>Informatica</td>
+        <td>80</td>
+        <td>50</td>
+        <td>30</td>
+      </tr>
+      <tr>
+        <td><img src="assets/icons/powerbi.png" alt="Power BI"> </td>
+        <td>Power BI</td>
+        <td>70</td>
+        <td>40</td>
+        <td>20</td>
+      </tr>
+      <tr>
+        <td><img src="assets/icons/snowflake.png" alt="Snowflake"> </td>
+        <td>Snowflake</td>
+        <td>60</td>
+        <td>30</td>
+        <td>10</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>© <strong class="sitename">Certe.</strong> All Rights Reserved</p>
+  </footer>
+
+</body>
+
+</html>

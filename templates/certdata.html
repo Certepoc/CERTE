@@ -1,0 +1,359 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a85b6, #bac8e0);
+            color: #333;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .curved-section {
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .header, .footer {
+            background-color: white;
+        }
+        .main-content {
+            background-color: white;
+            padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            overflow-y: auto;
+        }
+        h1 {
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #7c83db, #a9a4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h2 {
+            font-weight: bold;
+            color: #6a85b6;
+            margin: 0;
+            font-size: large;
+            margin-bottom: 15px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        a {
+            font-size: 15px;
+        }
+        .list-unstyled{
+            height:250px;
+        }
+        .metrics-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .metrics-section {
+            width: 48%;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .metrics-section h3 {
+            margin-top: 0;
+        }
+        .metrics-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .metrics-section th, .metrics-section td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header class="d-flex justify-content-between align-items-center p-3 curved-section header">
+        <img src="{% static 'logo.png' %}" alt="Logo" class="logo" style="width: 150px;">
+        <div class="d-flex align-items-center">
+            Welcome, Malli
+            <i class="fas fa-user mx-2" title="Profile"></i>
+            <i class="fas fa-bell mx-2" title="Notifications"></i>
+            <a href="/logout" class="text-dark text-decoration-none">Logout</a>
+        </div>
+    </header>
+
+    <main class="container-fluid curved-section mb-3 main-content">
+        <nav class="col-md-2 bg-light sidebar p-3">
+            <ul class="list-unstyled">
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('dashboard')">&#9201; Dashboard</a></li>
+                <li class="py-2"><a href="#" class="text-decoration-none" onclick="showSection('voucher-management')">&#127915; Voucher Management</a></li>
+        </nav>
+
+        <div class="col-md-9" style="margin: auto;">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="main-section">
+                <h1>Admin Dashboard</h1>
+                <h2>Overview of User Statistics</h2>
+                <div class="metrics-container">
+                    <h3>Total Users</h3>
+                    <p><b>1000</b></p>
+                    <h3>Active Users</h3>
+                    <p><b>800</b></p>
+                    <h3>Blocked Users</h3>
+                    <p><b>50</b></p>
+                </div>
+
+                <h2>Quick Access to Recent Activities</h2>
+                <div>
+                    <h4>New Certifications Added</h4>
+                    <ul>
+                        <li>Certification A</li>
+                        <li>Certification B</li>
+                    </ul>
+                    <h4>Users Registered</h4>
+                    <ul>
+                        <li>User 1</li>
+                        <li>User 2</li>
+                    </ul>
+                </div>
+
+                <h2>Notifications Panel</h2>
+                <div class="info">
+                    <p>System Alerts: <b>No new alerts</b></p>
+                </div>
+            </div>
+            <!-- Voucher Management Section -->
+            <div id="voucher-management" class="main-section hidden">
+                <h1>Voucher Management</h1>
+                <h2>Upload Vouchers</h2>
+                <input type="file" id="voucherFile" accept=".xls,.xlsx" class="form-control mb-3">
+                <button class="btn btn-success" onclick="handleFileUpload()">Upload</button>
+
+
+                <h2>Voucher List</h2>
+                <input type="text" id="voucherSearch" placeholder="Search by Certification Name or Voucher Code" class="form-control mb-3" oninput="filterVouchers()">
+                <table class="table" id="voucherTable">
+                    <thead>
+                        <tr>
+                            <th>employee name</th>
+                            <th>employee ps no</th>
+                            <th>employee designation</th>
+                            <th>certification details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="voucherTableBody">
+                        <!-- Voucher items will be dynamically inserted here -->
+                    </tbody>
+                </table>
+                <button id="saveVouchersBtn" class="btn btn-primary mt-3"  onclick="saveVouchers()">
+                    Save Certification
+                </button>
+            </div>            
+        </div>
+    </main>
+
+    <footer class="text-center py-3 curved-section footer">
+        © 2024 LTIMindtree
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function showSection(section) {
+                // Hide all sections
+                document.querySelectorAll('.main-section').forEach(s => {
+                    s.classList.add('hidden');
+                });
+                // Show the selected section
+                document.getElementById(section).classList.remove('hidden');
+            }
+
+            // Show the dashboard by default on page load
+            document.addEventListener('DOMContentLoaded', () => {
+                showSection('dashboard');
+            });
+
+
+            document.getElementById('addUserBtn').onclick = function() {
+            const userForm = document.getElementById('user-form');
+
+            if (userForm.classList.contains('hidden')) {
+                userForm.classList.remove('hidden');
+            } else {
+                    userForm.classList.add('hidden');
+                }
+            };
+
+            function handleFileUpload() {
+        const fileInput = document.getElementById('voucherFile');
+
+        if (!fileInput) {
+            console.error('File input element not found');
+            return;
+        }
+        const file = fileInput.files[0];
+        if (!file) {
+            alert('Please select a file first');
+            return;
+        }
+        console.log('File selected:', file.name); // Debug log
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Assume first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                alert(firstSheetName)
+
+                // Convert to JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                alert(jsonData)
+
+                console.log('Parsed data:', jsonData); // Debug log
+
+                // Display the data
+                displayVoucherData(jsonData);
+            } catch (error) {
+                console.error('Error processing file:', error);
+                alert('Error processing the Excel file. Please make sure it\'s a valid Excel file.');
+            }
+        };
+
+        reader.onerror = function(error) {
+            console.error('Error reading file:', error);
+            alert('Error reading the file');
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+    let voucherData = []; // Global variable to store the voucher data
+    function displayVoucherData(data) {
+        const tbody = document.getElementById('voucherTableBody');
+        if (!tbody) {
+            console.error('Table body element not found');
+            return;
+        }
+        tbody.innerHTML = ''; // Clear existing data
+        if (data.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="3">No data found in the Excel file</td>';
+            tbody.appendChild(tr);
+            return;
+        }
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row['employee name'] || row['employee_name'] || ''}</td>
+                <td>${row['employee ps no'] || row['employee_ps_no'] || ''}</td>
+                <td>${row['employee designation'] || row['employee_designation'] || ''}</td>
+                <td>${row['certification details'] || row['certification_details'] || ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        document.getElementById('saveVouchersBtn').style.display = 'block';
+    }
+    function saveVouchers() {
+        const tbody = document.getElementById('voucherTableBody');
+        if (!tbody || !tbody.children.length) {
+            alert(tbody)
+            alert(tbody.children.length)
+            alert('No voucher data to save!');
+            return;
+        }
+        // Show loading state
+        const saveBtn = document.getElementById('saveVouchersBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = 'Saving...';
+        saveBtn.disabled = true;
+        // Collect data from the table
+        const vouchers = [];
+        Array.from(tbody.children).forEach(row => {
+            const cells = row.cells;
+
+            if (cells.length < 4) {
+                console.error('Row does not have enough cells:', row);
+                alert('One or more rows are missing data. Please check your input.');
+                return; // Skip this row
+            }
+            vouchers.push({
+                employee_name: cells[0].textContent,
+                employee_ps_no: cells[1].textContent,
+                employee_designation: cells[2].textContent,
+                certification_details: cells[3].textContent
+            });
+        });
+        // Send data to the server
+        fetch('/save_certs/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ vouchers: vouchers })
+        })
+
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Saved Count:', data.saved_count);
+                alert(`Successfully saved ${data.saved_count} out of ${data.total_count} vouchers.`);
+                if (data.errors && data.errors.length > 0) {
+                    console.log('Errors:', data.errors);
+                    alert('Some vouchers could not be saved. Check console for details.');
+                }
+                // Clear the table after successful save
+                tbody.innerHTML = '';
+            } else {
+                alert('Error saving vouchers: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error saving vouchers. Please try again.');
+        })
+            .finally(() => {
+                // Reset button state
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            });
+        }
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
+</body>
+</html>
